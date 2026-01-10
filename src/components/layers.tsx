@@ -35,102 +35,92 @@ const SecondLayers = ({
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   svgRef: React.RefObject<SVGSVGElement | null>;
   containerRef: React.RefObject<HTMLDivElement | null>;
-  images: { src: string; label: string; color: string; parentIndex: number }[];
+  images: { label: string }[];
 }) => {
   useEffect(() => {
     const drawConnections = () => {
       if (!svgRef.current || !containerRef.current) return;
 
       const svg = d3.select(svgRef.current);
-
       svg.selectAll(".second-layer-path").remove();
       svg.selectAll(".second-layer-circle").remove();
 
       const containerRect = containerRef.current.getBoundingClientRect();
 
-      // Draw connections from parent boxes to grandchildren
-      images.forEach((image, i) => {
-        const parentBox = parentBoxRefs.current[image.parentIndex];
-        const childBox = boxRefs.current[i];
-
-        if (!parentBox || !childBox) return;
-
-        const parentRect = parentBox.getBoundingClientRect();
+      images.forEach((_image, childIndex) => {
+        const childBox = boxRefs.current[childIndex];
+        if (!childBox) return;
         const childRect = childBox.getBoundingClientRect();
-
-        const source: Point = {
-          x: parentRect.left + parentRect.width / 2 - containerRect.left,
-          y: parentRect.bottom - containerRect.top,
-        };
 
         const target: Point = {
           x: childRect.left + childRect.width / 2 - containerRect.left,
           y: childRect.top - containerRect.top,
         };
 
-        const controlPoint1: Point = {
-          x: source.x,
-          y: source.y + (target.y - source.y) * 0.5,
-        };
+        parentBoxRefs.current.forEach((parentBox, parentIndex) => {
+          if (!parentBox) return;
 
-        const controlPoint2: Point = {
-          x: target.x,
-          y: target.y - (target.y - source.y) * 0.5,
-        };
+          const parentRect = parentBox.getBoundingClientRect();
 
-        const pathData = `M ${source.x},${source.y} 
-                          C ${controlPoint1.x},${controlPoint1.y} 
-                            ${controlPoint2.x},${controlPoint2.y} 
-                            ${target.x},${target.y}`;
+          const source: Point = {
+            x: parentRect.left + parentRect.width / 2 - containerRect.left,
+            y: parentRect.bottom - containerRect.top,
+          };
 
-        const path = svg
-          .append("path")
-          .attr("class", "second-layer-path")
-          .attr("d", pathData)
-          .attr("fill", "none")
-          .attr("stroke", "#cbd5e1")
-          .attr("stroke-width", 1.5)
-          .attr("stroke-dasharray", "3,3")
-          .attr("opacity", 0.4);
+          const controlPoint1: Point = {
+            x: source.x,
+            y: source.y + (target.y - source.y) * 0.5,
+          };
 
-        const pathNode = path.node() as SVGPathElement;
-        const pathLength = pathNode.getTotalLength();
+          const controlPoint2: Point = {
+            x: target.x,
+            y: target.y - (target.y - source.y) * 0.5,
+          };
 
-        const circle = svg
-          .append("circle")
-          .attr("class", "second-layer-circle")
-          .attr("r", 3)
-          .attr(
-            "fill",
-            image.color === "border-red-300"
-              ? "#ef4444"
-              : image.color === "border-green-300"
-              ? "#22c55e"
-              : "#3b82f6"
-          )
-          .attr("opacity", 0.7);
+          const pathData = `M ${source.x},${source.y} 
+                            C ${controlPoint1.x},${controlPoint1.y} 
+                              ${controlPoint2.x},${controlPoint2.y} 
+                              ${target.x},${target.y}`;
 
-        const animate = () => {
-          circle
-            .transition()
-            .duration(1800 + i * 150)
-            .ease(d3.easeLinear)
-            .attrTween("transform", () => (t: number) => {
-              const point = pathNode.getPointAtLength(t * pathLength);
-              return `translate(${point.x}, ${point.y})`;
-            })
-            .on("end", animate);
-        };
+          const path = svg
+            .append("path")
+            .attr("class", "second-layer-path")
+            .attr("d", pathData)
+            .attr("fill", "none")
+            .attr("stroke", "#cbd5e1")
+            .attr("stroke-width", 1)
+            .attr("stroke-dasharray", "3,3")
+            .attr("opacity", 0.8);
 
-        setTimeout(() => animate(), i * 200);
+          const pathNode = path.node() as SVGPathElement;
+          const pathLength = pathNode.getTotalLength();
+
+          const circle = svg
+            .append("circle")
+            .attr("class", "second-layer-circle")
+            .attr("r", 3)
+            .attr("fill", "black")
+            .attr("opacity", 0.8);
+
+          const animate = () => {
+            circle
+              .transition()
+              .duration(2000 + Math.random() * 1000)
+              .ease(d3.easeLinear)
+              .attrTween("transform", () => (t: number) => {
+                const point = pathNode.getPointAtLength(t * pathLength);
+                return `translate(${point.x}, ${point.y})`;
+              })
+              .on("end", animate);
+          };
+
+          setTimeout(() => animate(), childIndex * 100 + parentIndex * 300);
+        });
       });
     };
 
     const timer = setTimeout(drawConnections, 200);
-
-    const resizeObserver = new ResizeObserver(() => {
-      drawConnections();
-    });
+    const resizeObserver = new ResizeObserver(() => drawConnections());
 
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
@@ -145,30 +135,21 @@ const SecondLayers = ({
   }, [images, parentBoxRefs, boxRefs, svgRef, containerRef]);
 
   return (
-    <div className="flex gap-6 justify-center items-center flex-wrap mt-12">
+    <div className="flex gap-6 justify-center items-center flex-wrap mt-24">
       {images.map((image, i) => (
         <div
           key={i}
           ref={(el) => {
             boxRefs.current[i] = el;
           }}
-          className="flex flex-col items-center"
+          className="flex flex-col items-center rounded-2xl"
         >
-          <div
-            className={`w-24 h-24 rounded-lg shadow-md border-2 ${image.color} overflow-hidden bg-gray-50`}
-          >
-            {image.src ? (
-              <img
-                src={image.src}
-                alt={image.label}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                Loading...
-              </div>
-            )}
-          </div>
+          <img
+            className="w-24 h-24 rounded-2xl"
+            src="src\components\galcier.jpg"
+            alt={image.label}
+          />
+
           <div className="text-center mt-1 text-xs text-gray-500">
             {image.label}
           </div>
@@ -189,17 +170,11 @@ const Layers = ({ images, boxRefs }: LayersProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const secondBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Create 5 grandchildren for each of the 3 channels
-  const grandChildren = channels.flatMap((channel, parentIndex) =>
-    Array(5)
-      .fill(null)
-      .map((_, i) => ({
-        src: channel.src,
-        label: `${channel.label.split(" ")[0]} ${i + 1}`,
-        color: channel.color,
-        parentIndex: 1,
-      }))
-  );
+  const grandChildren = Array(10)
+    .fill(null)
+    .map((_, i) => ({
+      label: `Feature Map ${i + 1}`,
+    }));
 
   return (
     <div ref={containerRef} className="relative w-full">
@@ -273,13 +248,13 @@ const VisualizationContainer = ({
       const svg = d3.select(svgRef.current);
       svg.selectAll("*").remove();
       const containerRect = containerRef.current.getBoundingClientRect();
-      const upImgRect = uploadedImageRef.current.getBoundingClientRect();
+      const inputImage = uploadedImageRef.current.getBoundingClientRect();
       const source: Point = {
-        x: upImgRect.left + upImgRect.width / 2 - containerRect.left,
-        y: upImgRect.bottom - containerRect.top,
+        x: inputImage.left + inputImage.width / 2 - containerRect.left,
+        y: inputImage.bottom - containerRect.top,
       };
 
-      boxRefs.current.forEach((box, i) => {
+      boxRefs.current.forEach((box, _i) => {
         if (!box) return;
         const boxRect = box.getBoundingClientRect();
         const target: Point = {
@@ -301,7 +276,7 @@ const VisualizationContainer = ({
                             ${controlPoint2.x},${controlPoint2.y} 
                             ${target.x},${target.y}`;
 
-        const path = svg
+        svg
           .append("path")
           .attr("d", pathData)
           .attr("fill", "none")
@@ -309,29 +284,6 @@ const VisualizationContainer = ({
           .attr("stroke-width", 2)
           .attr("stroke-dasharray", "5,5")
           .attr("opacity", 0.5);
-
-        const pathNode = path.node() as SVGPathElement;
-        const pathLength = pathNode.getTotalLength();
-
-        const circle = svg
-          .append("circle")
-          .attr("r", 5)
-          .attr("fill", "#3b82f6")
-          .attr("filter", "drop-shadow(0px 0px 3px rgba(59, 130, 246, 0.8))");
-
-        const animate = () => {
-          circle
-            .transition()
-            .duration(2000 + i * 300)
-            .ease(d3.easeLinear)
-            .attrTween("transform", () => (t: number) => {
-              const point = pathNode.getPointAtLength(t * pathLength);
-              return `translate(${point.x}, ${point.y})`;
-            })
-            .on("end", animate);
-        };
-
-        setTimeout(() => animate(), i * 400);
       });
     };
 
