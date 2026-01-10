@@ -35,19 +35,67 @@ interface ConvMulProp {
   src: string;
   dest: string;
 }
+const ConvMul = ({ src, dest }: ConvMulProp) => {
+  return (
+    <div className="  z-50 bg-gray-700/70 absolute w-full h-screen">
+      <div className="grid grid-cols-3 gap-5 rounded-2xl mx-auto bg-white px-9 pt-18 mt-90 pb-9  w-240">
+        <div className=" rounded-2xl ">
+          <h2 className=" text-center">Input (10,10)</h2>
+          <img className="rounded-2xl" src={"src/components/galcier.jpg"} />
+        </div>
+        <div className="  py-9 px-6">
+          <div className="   grid grid-cols-3 gap-3">
+            {Array(9)
+              .fill(null)
+              .map((_id: number) => {
+                return (
+                  <div className=" text-black">
+                    <h3 className=" bg-[#4A4A4A]/10 w-fit px-2 rounded-lg py-2">
+                      0.03
+                    </h3>
+                    <div className="flex gap-2 -translate-y-[0.5px] ">
+                      {" "}
+                      <p className=" text-xs ">x</p>
+                      <p className=" text-xs ">0.2</p>
+                    </div>
+                  </div>
+                );
+              })}
+          </div>
+          <div className=" w-fit mx-auto -translate-x-3 mt-6 text-black">
+            <h3 className=" bg-[#4A4A4A]/10 w-fit px-2 rounded-lg py-2">
+              0.03
+            </h3>
+            <div className="flex gap-2 -translate-y-[0.5px] ">
+              {" "}
+              <p className=" text-xs ">x</p>
+              <p className=" text-xs ">0.2</p>
+            </div>
+          </div>
+        </div>
 
+        <div className="rounded-2xl">
+          <h2 className=" text-center">Input (10,10)</h2>
+
+          <img className="rounded-2xl" src={"src/components/galcier.jpg"} />
+        </div>
+      </div>
+    </div>
+  );
+};
 const ConvolutionFilters = ({
   images,
   convolutedImage,
 }: ConvolutionFiltersProp) => {
   const ShowMatrixMulti = (src: string, id: number) => {
+    setShowMat(!showMat);
     console.log(src, id);
   };
   const channels = [
     { src: images.ImageR, label: "Red Channel", color: "border-red-400" },
     { src: images.ImageG, label: "Green Channel", color: "border-green-400" },
   ];
-
+  const [showMat, setShowMat] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -150,6 +198,7 @@ const ConvolutionFilters = ({
       window.removeEventListener("resize", drawConnections);
     };
   }, [images, convolutedImage]);
+
   return (
     <div
       ref={containerRef}
@@ -208,6 +257,7 @@ const ConvolutionFilters = ({
           Input Image
         </div>
       </div>
+      {showMat && <ConvMul src="fd" dest="sf" />}
     </div>
   );
 };
