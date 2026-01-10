@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { imageSenderApi } from "./Apis/Image";
-import VisualizationContainer from "./components/layers";
+import VisualizationContainer, { ConvolutionMap } from "./components/layers";
 
 interface ImageResponse {
   message: string;
@@ -53,7 +53,7 @@ const App = () => {
   }, [image]);
 
   return (
-    <div className="w-full min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
+    <div className="w-full relative min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
       <nav className="bg-white shadow-md py-4 px-6">
         <h1 className="text-xl font-bold text-gray-800">
           CNN & LLM Visualizer
@@ -88,7 +88,9 @@ const App = () => {
         {imagePreview && (
           <VisualizationContainer imagePreview={imagePreview} images={images} />
         )}
-
+        <div className="">
+          <ConvolutionMap />
+        </div>
         {!imagePreview && (
           <div className="text-gray-500 text-center mt-10">
             <p className="text-lg">
