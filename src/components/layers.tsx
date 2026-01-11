@@ -37,15 +37,19 @@ const ConvolutionFilters = ({
   images,
   convolutedImage,
 }: ConvolutionFiltersProp) => {
-  const ShowMatrixMulti = (src: string, id: number) => {
-    setShowMat(!showMat);
+  const ConvVisualHandler = () => {
+    setConvVisual(!convVisual);
+  };
+  const ConvVisualFunc = (src: string, id: number) => {
+    setConvVisual(!convVisual);
     console.log(src, id);
   };
+
   const channels = [
     { src: images.ImageR, label: "Red Channel", color: "border-red-400" },
     { src: images.ImageG, label: "Green Channel", color: "border-green-400" },
   ];
-  const [showMat, setShowMat] = useState(false);
+  const [convVisual, setConvVisual] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -109,26 +113,28 @@ const ConvolutionFilters = ({
         const pathNode = path.node() as SVGPathElement;
         const pathLength = pathNode.getTotalLength();
 
-        const circle = svg
-          .append("circle")
-          .attr("class", "second-layer-circle")
-          .attr("r", 3)
-          .attr("fill", "black")
-          .attr("opacity", 0.8);
+        if (!convVisual) {
+          const circle = svg
+            .append("circle")
+            .attr("class", "second-layer-circle")
+            .attr("r", 3)
+            .attr("fill", "black")
+            .attr("opacity", 0.8);
 
-        const animate = () => {
-          circle
-            .transition()
-            .duration(2000 + Math.random() * 1000)
-            .ease(d3.easeLinear)
-            .attrTween("transform", () => (t: number) => {
-              const point = pathNode.getPointAtLength(t * pathLength);
-              return `translate(${point.x}, ${point.y})`;
-            })
-            .on("end", animate);
-        };
+          const animate = () => {
+            circle
+              .transition()
+              .duration(2000 + Math.random() * 1000)
+              .ease(d3.easeLinear)
+              .attrTween("transform", () => (t: number) => {
+                const point = pathNode.getPointAtLength(t * pathLength);
+                return `translate(${point.x}, ${point.y})`;
+              })
+              .on("end", animate);
+          };
 
-        setTimeout(() => animate(), 1 * 100 + 1 * 300);
+          setTimeout(() => animate(), 1 * 100 + 1 * 300);
+        }
       });
     };
 
@@ -156,7 +162,8 @@ const ConvolutionFilters = ({
   return (
     <div
       ref={containerRef}
-      className="relative z-50 h-screen flex flex-row justify-between py-15  items-center  w-full"
+      className="relative w-full z-50 h-screen flex flex-row 
+      justify-between py-15  items-center  "
     >
       <svg
         style={{ zIndex: 0 }}
@@ -165,13 +172,15 @@ const ConvolutionFilters = ({
       />
 
       <div
-        className="flex gap-8 md:gap-12 justify-center items-center relative
-      flex-col z-10 flex-wrap"
+        className={` ${
+          convVisual == true ? "opacity-40" : "opacity-100"
+        } flex gap-8 md:gap-12 justify-center items-center relative
+      flex-col z-10 flex-wrap`}
       >
         {channels.map((channel, i) => (
           <div
             onClick={() => {
-              ShowMatrixMulti(channel.src, i);
+              ConvVisualFunc(channel.src, i);
             }}
             ref={(el) => {
               inputRefs.current[i] = el;
@@ -200,8 +209,12 @@ const ConvolutionFilters = ({
           </div>
         ))}
       </div>
-      <div className="flex-1"></div>
-      <div ref={outputRef} className="   mb-16 md:mb-20">
+      <div
+        ref={outputRef}
+        className={`${
+          convVisual == true ? "opacity-40" : "opacity-100"
+        } mb-16 md:mb-20`}
+      >
         <img
           src={convolutedImage}
           alt="Uploaded Preview"
@@ -211,18 +224,22 @@ const ConvolutionFilters = ({
           Input Image
         </div>
       </div>
-      {showMat && (
+      {convVisual && (
         // <ConvolutionVisualizer
         //   srcImg="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png"
         //   destImg="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/132.png"
         // />
 
-        <ConvolutionVisualizer
-          imgSrc="src\components\galcier.jpg"
-          resultImgSrc="src\components\galcier.jpg"
-          autoPlaySpeed={500}
-          kernel={{ data: DEFAULT_KERNEL }}
-        />
+        <div className="  absolute z-50 bottom-[25%] left-[40%] ">
+          {" "}
+          <ConvolutionVisualizer
+            ConvVisualHandler={ConvVisualHandler}
+            imgSrc="src\components\galcier.jpg"
+            resultImgSrc="src\components\galcier.jpg"
+            autoPlaySpeed={1000}
+            kernel={{ data: DEFAULT_KERNEL }}
+          />
+        </div>
       )}
     </div>
   );
