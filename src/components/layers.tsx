@@ -1,6 +1,6 @@
 import * as d3 from "d3";
 import React, { useRef, useEffect, useState } from "react";
-import ConvolutionVisualizer from "./ConvolutionVisualizer";
+import { ConvolutionVisualizer } from "./ConvolutionVisualizer";
 
 interface Point {
   x: number;
@@ -148,7 +148,11 @@ const ConvolutionFilters = ({
       window.removeEventListener("resize", drawConnections);
     };
   }, [images, convolutedImage]);
-
+  const DEFAULT_KERNEL = [
+    [1, 2, 3],
+    [1, 2, 3],
+    [1, 2, 3],
+  ];
   return (
     <div
       ref={containerRef}
@@ -214,8 +218,10 @@ const ConvolutionFilters = ({
         // />
 
         <ConvolutionVisualizer
-          srcImg="src\components\galcier.jpg"
-          destImg="src\components\galcier.jpg"
+          imgSrc="src\components\galcier.jpg"
+          resultImgSrc="src\components\galcier.jpg"
+          autoPlaySpeed={500}
+          kernel={{ data: DEFAULT_KERNEL }}
         />
       )}
     </div>
