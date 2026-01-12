@@ -5,13 +5,12 @@ import type { Point } from "./layers";
 
 const FirstConvLayer = ({
   images,
-
-  boxRefs,
-  parentBoxRefs,
-  svgRef,
-  containerRef,
+  childBoxRefs, // Input Refs (from RGB)
+  parentBoxRefs, // Source Refs (from RGB)
+  svgRef, // SVG (RGB -> Conv)
+  containerRef, // Container (RGB -> Conv)
 }: {
-  boxRefs: React.RefObject<(HTMLDivElement | null)[]>;
+  childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   svgRef: React.RefObject<SVGSVGElement | null>;
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -28,7 +27,7 @@ const FirstConvLayer = ({
       const containerRect = containerRef.current.getBoundingClientRect();
 
       images.forEach((_image, childIndex) => {
-        const childBox = boxRefs.current[childIndex];
+        const childBox = childBoxRefs.current[childIndex];
         if (!childBox) return;
         const childRect = childBox.getBoundingClientRect();
 
@@ -70,7 +69,7 @@ const FirstConvLayer = ({
             .attr("stroke", "#cbd5e1")
             .attr("stroke-width", 1)
             .attr("stroke-dasharray", "3,3")
-            .attr("opacity", 0.8);
+            .attr("opacity", 0.5); // Lowered opacity for cleaner look
 
           const pathNode = path.node() as SVGPathElement;
           const pathLength = pathNode.getTotalLength();
@@ -112,46 +111,57 @@ const FirstConvLayer = ({
       resizeObserver.disconnect();
       window.removeEventListener("resize", drawConnections);
     };
-  }, [images, parentBoxRefs, boxRefs, svgRef, containerRef]);
-  const svgRef3 = useRef<SVGSVGElement>(null);
-  const containerRef2 = useRef<HTMLDivElement>(null);
-  const secondBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
+  }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
+
+  // --- 2. Setup Refs for Next Layer (Conv -> Relu) ---
+  const svgRef_ = useRef<SVGSVGElement>(null);
+  const containerRef_ = useRef<HTMLDivElement>(null);
+  const convLayerRefs = useRef<(HTMLDivElement | null)[]>([]); // Source for Relu
+  const reluLayerRefs = useRef<(HTMLDivElement | null)[]>([]); // Destination for Relu
 
   return (
     <div
-      ref={containerRef2}
-      className="flex gap-6 justify-center items-center flex-wrap mt-24"
+      ref={containerRef_}
+      // FIX 1: Added 'relative' so the SVG aligns to THIS container
+      // FIX 2: Changed to 'flex-col' to vertically stack Conv Images and Relu Layer
+      className="relative flex flex-col items-center mt-24 w-full"
     >
       <svg
-        ref={svgRef3}
+        ref={svgRef_}
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
-        style={{ zIndex: 1 }}
+        style={{ zIndex: 0 }}
       />
-      {images.map((image, i) => (
-        <div
-          key={i}
-          ref={(el) => {
-            boxRefs.current[i] = el;
-          }}
-          className="flex flex-col items-center rounded-2xl"
-        >
-          <img
-            className="w-24 h-24 rounded-2xl"
-            src={image.srcImg}
-            alt={image.label}
-          />
 
-          <div className="text-center mt-1 text-xs text-gray-500">
-            {image.label}
+      {/* FIX 3: Grouped Conv images in a row container */}
+      <div className="flex gap-6 justify-center items-center z-10">
+        {images.map((image, i) => (
+          <div
+            key={i}
+            ref={(el) => {
+              // Register this element for BOTH layers
+              if (childBoxRefs.current) childBoxRefs.current[i] = el; // Destination of RGB
+              convLayerRefs.current[i] = el; // Source for Relu
+            }}
+            className="flex flex-col items-center rounded-2xl bg-white"
+          >
+            <img
+              className="w-24 h-24 rounded-2xl shadow-sm"
+              src={image.srcImg}
+              alt={image.label}
+            />
+            <div className="text-center mt-1 text-xs text-gray-500">
+              {image.label}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
       <FirstReluLayer
-        containerRef={containerRef2}
-        parentBoxRefs={boxRefs}
-        boxRefs={secondBoxRefs}
+        containerRef={containerRef_} // Pass the wrapper container
+        parentBoxRefs={convLayerRefs} // Pass Conv images as source
+        childBoxRefs={reluLayerRefs} // Pass empty refs for Relu to fill
         images={images}
-        svgRef={svgRef3}
+        svgRef={svgRef_} // Pass the wrapper SVG
       />
     </div>
   );

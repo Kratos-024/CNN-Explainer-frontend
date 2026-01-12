@@ -17,9 +17,9 @@ const RGBLayers = ({ featImages, images, boxRefs }: RGBLayersProps) => {
     { src: images.ImageB, label: "Blue Channel", color: "border-blue-300" },
   ];
 
-  const svgRef2 = useRef<SVGSVGElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const secondBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const childBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const grandChildren = Array(featImages.length)
     .fill(null)
     .map((_, i) => ({
@@ -30,7 +30,7 @@ const RGBLayers = ({ featImages, images, boxRefs }: RGBLayersProps) => {
   return (
     <div ref={containerRef} className="relative w-full">
       <svg
-        ref={svgRef2}
+        ref={svgRef}
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
         style={{ zIndex: 1 }}
       />
@@ -68,9 +68,9 @@ const RGBLayers = ({ featImages, images, boxRefs }: RGBLayersProps) => {
 
       <FirstConvLayer
         images={grandChildren}
-        boxRefs={secondBoxRefs}
+        childBoxRefs={childBoxRefs}
         parentBoxRefs={boxRefs}
-        svgRef={svgRef2}
+        svgRef={svgRef}
         containerRef={containerRef}
       />
     </div>

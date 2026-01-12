@@ -1,15 +1,15 @@
 import * as d3 from "d3";
 import { useEffect } from "react";
-import type { Point } from "./layers";
+import type { Point } from "./layers"; // Assuming Point is defined centrally or locally
 
 const FirstReluLayer = ({
   images,
-  boxRefs,
+  childBoxRefs,
   parentBoxRefs,
   svgRef,
   containerRef,
 }: {
-  boxRefs: React.RefObject<(HTMLDivElement | null)[]>;
+  childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   svgRef: React.RefObject<SVGSVGElement | null>;
   containerRef: React.RefObject<HTMLDivElement | null>;
@@ -17,6 +17,7 @@ const FirstReluLayer = ({
 }) => {
   useEffect(() => {
     const drawConnections = () => {
+      // 1. Safety checks
       if (!svgRef.current || !containerRef.current) return;
 
       const svg = d3.select(svgRef.current);
@@ -26,10 +27,18 @@ const FirstReluLayer = ({
       const containerRect = containerRef.current.getBoundingClientRect();
 
       images.forEach((_image, index) => {
-        const childBox = boxRefs.current[index];
-        const parentBox = parentBoxRefs.current[index];
+        // 2. Get the specific elements
+        const childBox = childBoxRefs.current[index]; // Destination (ReLU Image)
+        const parentBox = parentBoxRefs.current[index]; // Source (Conv Image)
 
-        if (!childBox || !parentBox) return;
+        // 3. THIS CHECK WAS FAILING BEFORE
+        if (!childBox || !parentBox) {
+          console.warn(`Missing refs for index ${index}`, {
+            childBox,
+            parentBox,
+          });
+          return;
+        }
 
         const childRect = childBox.getBoundingClientRect();
         const parentRect = parentBox.getBoundingClientRect();
@@ -64,10 +73,10 @@ const FirstReluLayer = ({
           .attr("class", "relu-layer-path")
           .attr("d", pathData)
           .attr("fill", "none")
-          .attr("stroke", "#cbd5e1")
+          .attr("stroke", "#ef4444") // Changed to Red to match your theme
           .attr("stroke-width", 2)
           .attr("stroke-dasharray", "5,5")
-          .attr("opacity", 0.8);
+          .attr("opacity", 0.6);
 
         const pathNode = path.node() as SVGPathElement;
         const pathLength = pathNode.getTotalLength();
@@ -75,9 +84,9 @@ const FirstReluLayer = ({
         const circle = svg
           .append("circle")
           .attr("class", "relu-layer-circle")
-          .attr("r", 3)
+          .attr("r", 4)
           .attr("fill", "#ef4444")
-          .attr("opacity", 0.8);
+          .attr("opacity", 1);
 
         const animate = () => {
           circle
@@ -108,17 +117,23 @@ const FirstReluLayer = ({
       resizeObserver.disconnect();
       window.removeEventListener("resize", drawConnections);
     };
-  }, [images, parentBoxRefs, boxRefs, svgRef, containerRef]);
+  }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
 
   return (
     <div className="flex gap-6 justify-center items-center flex-wrap mt-24">
       {images.map((image, i) => (
-        <div key={i} className="flex flex-col items-center rounded-2xl">
+        <div
+          key={i}
+          className="flex flex-col items-center rounded-2xl relative z-10"
+        >
           <img
             ref={(el) => {
-              boxRefs.current[i] = el;
+              // FIX: Assign to childBoxRefs, NOT parentBoxRefs
+              if (childBoxRefs.current) {
+                childBoxRefs.current[i] = el;
+              }
             }}
-            className="w-24 h-24 rounded-2xl border-2 border-dashed border-red-200 p-1"
+            className="w-24 h-24 rounded-2xl border-2 border-dashed border-red-400 p-1 bg-white"
             src={image.srcImg}
             alt={image.label}
           />
