@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import VisualizationContainer, { ConvolutionMap } from "./components/layers";
 import { classifyNdRGB, getimgData } from "./Apis/Image";
+import { VisualizationContainer } from "./components/layers";
+import { ConvolutionMap } from "./components/ConvVisual";
 
 const App = () => {
   const [image, setImage] = useState<File | null>(null);
@@ -31,19 +32,26 @@ const App = () => {
           ImageG: `data:image/png;base64,${ImageG}`,
           ImageB: `data:image/png;base64,${ImageB}`,
         });
-        console.log("Predicted class:", predicted_class);
       }
-      const res2 = await getimgData(formData);
-      if (res2?.message) {
-        setFeatImages((prev) => {
-          [...prev, res2.img_data];
-        });
+      const res2 = await getimgData(formData, 0);
+
+      if (res2?.success) {
+        const featImgs = [];
+        for (let i = 0; i < res2.firstConvLayer.length; i++) {
+          const featImg = `data:image/png;base64,${res2.firstConvLayer[i]}`;
+          featImgs.push(featImg);
+        }
+        setFeatImages(featImgs);
       }
 
       setLoading(false);
     };
 
     sendImage();
+
+    if (featImages[0]) {
+      console.log(featImages);
+    }
   }, [image]);
 
   return (
