@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import FirstConvLayer from "./ConvLayer";
+import { FirstConvLayer } from "./ConvLayer";
 
 interface RGBLayersProps {
   featImages: string[];
