@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { drawReluConnections } from "./ReluLayer";
+import type { FirstConvProps } from "./RGBLayers";
 
-const FirstMaxPoolLayer = ({
+const MaxPoolLayer = ({
   images,
   childBoxRefs,
   parentBoxRefs,
@@ -9,6 +10,8 @@ const FirstMaxPoolLayer = ({
   containerRef,
   path_class_name,
   circle_class_name,
+  nextLayer,
+  ThirdConvLayer,
 }: {
   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
@@ -17,6 +20,8 @@ const FirstMaxPoolLayer = ({
   images: { label: string; srcImg: string }[];
   path_class_name: string;
   circle_class_name: string;
+  nextLayer: boolean;
+  ThirdConvLayer: React.ComponentType<FirstConvProps>;
 }) => {
   useEffect(() => {
     const timer = setTimeout(drawReluConnections, 200);
@@ -63,12 +68,23 @@ const FirstMaxPoolLayer = ({
       });
     };
   }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
-
+  const svgRef_ = useRef<SVGSVGElement>(null);
+  const containerRef_ = useRef<HTMLDivElement>(null);
+  const nextLayerBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const localBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const NCL = ThirdConvLayer;
   return (
     <div
-      className="relative flex flex-col   gap-6 justify-center
+      ref={containerRef_}
+      className="relative flex flex-col  gap-6 justify-center
       items-center mt-24"
     >
+      {" "}
+      <svg
+        ref={svgRef_}
+        className="absolute top-0 left-0 w-full h-full pointer-events-none"
+        style={{ zIndex: 0 }}
+      />
       <div className="flex gap-6 justify-center items-center z-10 flex-wrap">
         {images.map((image, i) => (
           <div
@@ -80,6 +96,7 @@ const FirstMaxPoolLayer = ({
                 if (childBoxRefs.current) {
                   childBoxRefs.current[i] = el;
                 }
+                localBoxRefs.current[i] = el;
               }}
               className="w-24 h-24 rounded-2xl border-2 border-dashed border-red-400 p-1 bg-white"
               src={image.srcImg}
@@ -87,13 +104,23 @@ const FirstMaxPoolLayer = ({
             />
 
             <div className="text-center mt-1 text-xs text-gray-500">
-              ReLU {i + 1}
+              MaxPool {i + 1}
             </div>
           </div>
         ))}
+      </div>{" "}
+      <div className=" mt-16">
+        {nextLayer && NCL && (
+          <NCL
+            images={images}
+            childBoxRefs={nextLayerBoxRefs}
+            parentBoxRefs={localBoxRefs}
+            svgRef={svgRef_}
+            containerRef={containerRef_}
+          />
+        )}
       </div>
-      <div className=" mt-16"> </div>
     </div>
   );
 };
-export { FirstMaxPoolLayer };
+export { MaxPoolLayer };
