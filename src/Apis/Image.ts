@@ -1,4 +1,5 @@
 const api_uri = "http://127.0.0.1:8000";
+
 interface ImageResponse {
   message: string;
   predicted_class: string;
@@ -6,23 +7,22 @@ interface ImageResponse {
   ImageG: string;
   ImageB: string;
 }
-interface ImageDataResponse {
+interface FeatDataResponse {
   message: string;
-  ImageData: [][];
+  shape: number;
+  img_data: string[];
 }
-
-const imageSenderApi = async (
+const classifyNdRGB = async (
   formData: FormData
-): Promise<ImageDataResponse | undefined> => {
+): Promise<ImageResponse | undefined> => {
   try {
-    console.log("dfdkljjffj");
     const response = await fetch(`${api_uri}/classify`, {
       method: "POST",
       body: formData,
     });
 
     const data = await response.json();
-    console.log(data);
+
     return data;
   } catch (error) {
     console.log(error);
@@ -31,7 +31,7 @@ const imageSenderApi = async (
 
 const getimgData = async (
   formData: FormData
-): Promise<ImageResponse | undefined> => {
+): Promise<FeatDataResponse | undefined> => {
   try {
     const response = await fetch(`${api_uri}/getImageData`, {
       method: "POST",
@@ -39,12 +39,12 @@ const getimgData = async (
     });
 
     const data = await response.json();
-    console.log("dfkfj");
+
     return data;
   } catch (error) {
     console.log(error);
   }
 };
 
-export { imageSenderApi, getimgData };
+export { classifyNdRGB, getimgData };
 export type { ImageResponse };

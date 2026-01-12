@@ -1,17 +1,10 @@
 import { useEffect, useState } from "react";
-import { imageSenderApi } from "./Apis/Image";
 import VisualizationContainer, { ConvolutionMap } from "./components/layers";
-
-interface ImageResponse {
-  message: string;
-  predicted_class: string;
-  ImageR: string;
-  ImageG: string;
-  ImageB: string;
-}
+import { classifyNdRGB, getimgData } from "./Apis/Image";
 
 const App = () => {
   const [image, setImage] = useState<File | null>(null);
+  const [featImages, setFeatImages] = useState<string[]>([""]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [images, setImages] = useState<{
     ImageR: string;
@@ -19,37 +12,38 @@ const App = () => {
     ImageB: string;
   }>({ ImageR: "", ImageG: "", ImageB: "" });
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
-    if (image) {
+    if (!image) return;
+
+    const sendImage = async () => {
+      setLoading(true);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-        setLoading(true);
-
-        const formData = new FormData();
-        formData.append("Img", image);
-
-        imageSenderApi(formData)
-          .then((res: ImageResponse | undefined) => {
-            if (!res) return;
-
-            const { predicted_class, ImageR, ImageG, ImageB } = res;
-            setImages({
-              ImageR: `data:image/png;base64,${ImageR}`,
-              ImageG: `data:image/png;base64,${ImageG}`,
-              ImageB: `data:image/png;base64,${ImageB}`,
-            });
-
-            console.log("Predicted class:", predicted_class);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
-      };
-
+      reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(image);
-    }
+
+      const formData = new FormData();
+      formData.append("Img", image);
+      const res = await classifyNdRGB(formData);
+      if (res) {
+        const { predicted_class, ImageR, ImageG, ImageB } = res;
+        setImages({
+          ImageR: `data:image/png;base64,${ImageR}`,
+          ImageG: `data:image/png;base64,${ImageG}`,
+          ImageB: `data:image/png;base64,${ImageB}`,
+        });
+        console.log("Predicted class:", predicted_class);
+      }
+      const res2 = await getimgData(formData);
+      if (res2?.message) {
+        setFeatImages((prev) => {
+          [...prev, res2.img_data];
+        });
+      }
+
+      setLoading(false);
+    };
+
+    sendImage();
   }, [image]);
 
   return (
@@ -86,7 +80,11 @@ const App = () => {
         )}
 
         {imagePreview && (
-          <VisualizationContainer imagePreview={imagePreview} images={images} />
+          <VisualizationContainer
+            featImages={featImages}
+            imagePreview={imagePreview}
+            images={images}
+          />
         )}
         <div className="">
           <ConvolutionMap />

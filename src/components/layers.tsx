@@ -8,6 +8,7 @@ interface Point {
 }
 
 interface LayersProps {
+  featImages: string[];
   images: {
     ImageR: string;
     ImageG: string;
@@ -17,6 +18,7 @@ interface LayersProps {
 }
 
 interface VisualizationContainerProps {
+  featImages: string[];
   imagePreview: string;
   images: {
     ImageR: string;
@@ -225,11 +227,6 @@ const ConvolutionFilters = ({
         </div>
       </div>
       {convVisual && (
-        // <ConvolutionVisualizer
-        //   srcImg="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/132.png"
-        //   destImg="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/shiny/132.png"
-        // />
-
         <div className="  absolute z-50 bottom-[25%] left-[40%] ">
           {" "}
           <ConvolutionVisualizer
@@ -412,7 +409,7 @@ const SecondLayers = ({
   );
 };
 
-const Layers = ({ images, boxRefs }: LayersProps) => {
+const Layers = ({ featImages, images, boxRefs }: LayersProps) => {
   const channels = [
     { src: images.ImageR, label: "Red Channel", color: "border-red-300" },
     { src: images.ImageG, label: "Green Channel", color: "border-green-300" },
@@ -423,9 +420,10 @@ const Layers = ({ images, boxRefs }: LayersProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const secondBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const grandChildren = Array(10)
+  const grandChildren = Array(featImages.length)
     .fill(null)
     .map((_, i) => ({
+      ImgSrc: featImages[i],
       label: `Feature Map ${i + 1}`,
     }));
 
@@ -480,6 +478,7 @@ const Layers = ({ images, boxRefs }: LayersProps) => {
 };
 
 const VisualizationContainer = ({
+  featImages,
   imagePreview,
   images,
 }: VisualizationContainerProps) => {
@@ -580,7 +579,7 @@ const VisualizationContainer = ({
         </div>
       </div>
 
-      <Layers images={images} boxRefs={boxRefs} />
+      <Layers featImages={featImages} images={images} boxRefs={boxRefs} />
     </div>
   );
 };
