@@ -9,7 +9,7 @@ interface Point {
 
 interface VisualizationContainerProps {
   animation: boolean;
-  featImages: string[];
+  featImages: string[][];
   imagePreview: string;
   images: {
     ImageR: string;
@@ -24,6 +24,7 @@ const VisualizationContainer = ({
   imagePreview,
   images,
 }: VisualizationContainerProps) => {
+  console.log(featImages.length);
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const uploadedImageRef = useRef<HTMLDivElement>(null);

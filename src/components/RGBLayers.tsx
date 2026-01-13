@@ -7,7 +7,7 @@ export interface LayersProps {
   animation: boolean;
   svgRef: React.RefObject<SVGSVGElement | null>;
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
-  images: { label: string; srcImg: string }[];
+  images: string[][];
   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
@@ -15,7 +15,7 @@ export interface ResultantLayersProps {
   animation: boolean;
   svgRef: React.RefObject<SVGSVGElement | null>;
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
-  results: { text: string }[];
+  results: string[][];
   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
@@ -29,6 +29,8 @@ const FirstConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
+      label={"Feature Map"}
+      index={0}
       animation={animation}
       images={images}
       childBoxRefs={childBoxRefs}
@@ -53,6 +55,8 @@ const FirstReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
+      label={"Relu"}
+      index={1}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -77,6 +81,8 @@ const SecondConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
+      label={"Feature Map"}
+      index={2}
       animation={animation}
       path_class_name="secondConv-layer-path"
       circle_class_name="secondConv-layer-circle"
@@ -101,6 +107,8 @@ const SecondReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
+      label={"Relu"}
+      index={3}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -125,6 +133,8 @@ const FirstMaxPoolLayer = ({
 }: LayersProps) => {
   return (
     <MaxPoolLayer
+      label={"Max Pool"}
+      index={4}
       animation={animation}
       circle_class_name="max-layer-circle"
       path_class_name="max-layer-path"
@@ -149,6 +159,8 @@ const ThirdConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
+      label={"Feature Map"}
+      index={5}
       animation={animation}
       path_class_name="thirdConv-layer-path"
       circle_class_name="thirdConv-layer-circle"
@@ -172,6 +184,8 @@ const ThirdReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
+      label={"Relu"}
+      index={6}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -196,6 +210,8 @@ const FourthConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
+      label={"Feature Map"}
+      index={7}
       animation={animation}
       path_class_name="thirdConv-layer-path"
       circle_class_name="thirdConv-layer-circle"
@@ -219,6 +235,8 @@ const FourthReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
+      label={"Relu"}
+      index={8}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -242,6 +260,8 @@ const SecondMaxPoolLayer = ({
 }: LayersProps) => {
   return (
     <MaxPoolLayer
+      label={"Max Pool"}
+      index={9}
       animation={animation}
       circle_class_name="max-layer-circle"
       path_class_name="max-layer-path"
@@ -278,7 +298,7 @@ const ResultLayer = ({
 };
 interface RGBLayersProps {
   animation: boolean;
-  featImages: string[];
+  featImages: string[][];
   images: {
     ImageR: string;
     ImageG: string;
@@ -301,12 +321,12 @@ const RGBLayers = ({
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const childBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const grandChildren = Array(featImages.length)
-    .fill(null)
-    .map((_, i) => ({
-      srcImg: featImages[i],
-      label: `Feature Map ${i + 1}`,
-    }));
+  // const grandChildren = Array(featImages[0].length)
+  //   .fill(null)
+  //   .map((_, i) => ({
+  //     srcImg: featImages[0][i],
+  //     label: `Feature Map ${i + 1}`,
+  //   }));
 
   return (
     <div ref={containerRef} className="relative w-full">
@@ -350,7 +370,7 @@ const RGBLayers = ({
       <div>
         <FirstConvLayer
           animation={animation}
-          images={grandChildren}
+          images={featImages}
           childBoxRefs={childBoxRefs}
           parentBoxRefs={boxRefs}
           svgRef={svgRef}

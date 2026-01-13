@@ -9,8 +9,10 @@ interface ImageResponse {
 }
 interface FeatDataResponse {
   success: boolean;
-  firstConvLayer: string[];
-  firstReluLayer: string[];
+  data: {
+    [key: string]: string[];
+  };
+  first_relu_images: string[];
 }
 const classifyNdRGB = async (
   formData: FormData
@@ -30,8 +32,7 @@ const classifyNdRGB = async (
 };
 
 const getimgData = async (
-  formData: FormData,
-  layer: number
+  formData: FormData
 ): Promise<FeatDataResponse | undefined> => {
   try {
     const response = await fetch(`${api_uri}/getImageData`, {

@@ -17,7 +17,7 @@ const ResultantLayerComp = ({
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   svgRef: React.RefObject<SVGSVGElement | null>;
   containerRef: React.RefObject<HTMLDivElement | null>;
-  results: { text: string }[];
+  results: string[][];
   path_class_name: string;
 }) => {
   useEffect(() => {
@@ -83,7 +83,7 @@ const ResultantLayerComp = ({
   return (
     <div className="relative flex flex-col items-center mt-24 w-full">
       <div className="flex gap-6 justify-center items-center z-10">
-        {results.map((result, i) => (
+        {results[0].map((result, i) => (
           <div
             key={i}
             ref={(el) => {
@@ -91,9 +91,7 @@ const ResultantLayerComp = ({
             }}
             className="flex flex-col items-center rounded-2xl bg-white"
           >
-            <span className="w-24 h-24 rounded-2xl shadow-sm">
-              {result.text}
-            </span>
+            <span className="w-24 h-24 rounded-2xl shadow-sm">{result}</span>
           </div>
         ))}
       </div>{" "}

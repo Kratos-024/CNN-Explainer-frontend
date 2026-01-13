@@ -1,13 +1,14 @@
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 import type { Point } from "./layers";
-import type { FirstConvProps } from "./RGBLayers";
+import type { LayersProps } from "./RGBLayers";
 
 export const drawReluConnections = (
+  index: number,
   animation: boolean,
   svgRef: React.RefObject<SVGSVGElement | null>,
   containerRef: React.RefObject<HTMLDivElement | null>,
-  images: { label: string; srcImg: string }[],
+  images: string[][],
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>,
   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>,
   path_class_name: string,
@@ -26,7 +27,7 @@ export const drawReluConnections = (
 
   const containerRect = containerRef.current.getBoundingClientRect();
 
-  images.forEach((_image, index) => {
+  images[index].forEach((_image, index) => {
     const childBox = childBoxRefs.current[index];
     const parentBox = parentBoxRefs.current[index];
 
@@ -103,6 +104,8 @@ export const drawReluConnections = (
   });
 };
 const ReluLayerComp = ({
+  label,
+  index,
   images,
   childBoxRefs,
   parentBoxRefs,
@@ -115,21 +118,24 @@ const ReluLayerComp = ({
   NextMaxPoolLayer,
   animation,
 }: {
+  label: string;
+  index: number;
   animation: boolean;
   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   svgRef: React.RefObject<SVGSVGElement | null>;
   containerRef: React.RefObject<HTMLDivElement | null>;
-  images: { label: string; srcImg: string }[];
+  images: string[][];
   path_class_name: string;
   circle_class_name: string;
   nextLayer: boolean;
-  NextConvLayer?: React.ComponentType<FirstConvProps>;
-  NextMaxPoolLayer?: React.ComponentType<FirstConvProps>;
+  NextConvLayer?: React.ComponentType<LayersProps>;
+  NextMaxPoolLayer?: React.ComponentType<LayersProps>;
 }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       drawReluConnections(
+        index,
         (animation = animation),
         svgRef,
         containerRef,
@@ -142,6 +148,7 @@ const ReluLayerComp = ({
     }, 200);
     const resizeObserver = new ResizeObserver(() =>
       drawReluConnections(
+        index,
         (animation = animation),
         svgRef,
         containerRef,
@@ -158,6 +165,7 @@ const ReluLayerComp = ({
     }
     window.addEventListener("resize", () => {
       drawReluConnections(
+        index,
         (animation = animation),
         svgRef,
         containerRef,
@@ -174,6 +182,7 @@ const ReluLayerComp = ({
       resizeObserver.disconnect();
       window.removeEventListener("resize", () => {
         drawReluConnections(
+          index,
           (animation = animation),
           svgRef,
           containerRef,
@@ -205,7 +214,7 @@ const ReluLayerComp = ({
         style={{ zIndex: 0 }}
       />
       <div className="flex gap-6 justify-center items-center z-10 flex-wrap">
-        {images.map((image, i) => (
+        {images[index].map((image, i) => (
           <div
             key={i}
             className="flex flex-col items-center rounded-2xl relative z-10"
@@ -218,8 +227,8 @@ const ReluLayerComp = ({
                 localBoxRefs.current[i] = el;
               }}
               className="w-24 h-24 rounded-2xl border-2 border-dashed border-red-400 p-1 bg-white"
-              src={image.srcImg || "null"}
-              alt={image.label}
+              src={image}
+              alt={label}
             />
 
             <div className="text-center mt-1 text-xs text-gray-500">
@@ -253,123 +262,5 @@ const ReluLayerComp = ({
     </div>
   );
 };
-
-// const SecondReluLayer = ({
-//   images,
-//   childBoxRefs,
-//   parentBoxRefs,
-//   svgRef,
-//   containerRef,
-//   path_class_name,
-//   circle_class_name,
-// }: {
-//   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
-//   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
-//   svgRef: React.RefObject<SVGSVGElement | null>;
-//   containerRef: React.RefObject<HTMLDivElement | null>;
-//   images: { label: string; srcImg: string }[];
-//   path_class_name: string;
-//   circle_class_name: string;
-// }) => {
-//   useEffect(() => {
-//     const timer = setTimeout(drawReluConnections, 200);
-//     const resizeObserver = new ResizeObserver(() =>
-//       drawReluConnections(
-//         svgRef,
-//         containerRef,
-//         images,
-//         parentBoxRefs,
-//         childBoxRefs,
-//         path_class_name,
-//         circle_class_name
-//       )
-//     );
-
-//     if (containerRef.current) {
-//       resizeObserver.observe(containerRef.current);
-//     }
-//     window.addEventListener("resize", () => {
-//       drawReluConnections(
-//         svgRef,
-//         containerRef,
-//         images,
-//         parentBoxRefs,
-//         childBoxRefs,
-//         path_class_name,
-//         circle_class_name
-//       );
-//     });
-
-//     return () => {
-//       clearTimeout(timer);
-//       resizeObserver.disconnect();
-//       window.removeEventListener("resize", () => {
-//         drawReluConnections(
-//           svgRef,
-//           containerRef,
-//           images,
-//           parentBoxRefs,
-//           childBoxRefs,
-//           path_class_name,
-//           circle_class_name
-//         );
-//       });
-//     };
-//   }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
-
-//   const svgRef_ = useRef<SVGSVGElement>(null);
-//   const containerRef_ = useRef<HTMLDivElement>(null);
-//   const reluLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
-//   const MaxLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-//   return (
-//     <div
-//       ref={containerRef_}
-//       className="relative flex flex-col w-full  gap-6 justify-center
-//       items-center mt-24"
-//     >
-//       <svg
-//         ref={svgRef_}
-//         className="absolute top-0 left-0 w-full h-full pointer-events-none"
-//         style={{ zIndex: 1 }}
-//       />
-//       <div className="flex gap-6 justify-center items-center z-10 flex-wrap">
-//         {images.map((image, i) => (
-//           <div
-//             key={i}
-//             className="flex flex-col items-center rounded-2xl relative z-10"
-//           >
-//             <img
-//               ref={(el) => {
-//                 if (childBoxRefs.current) {
-//                   childBoxRefs.current[i] = el;
-//                 }
-//                 MaxLayerRefs.current[i] = el;
-//               }}
-//               className="w-24 h-24 rounded-2xl border-2 border-dashed border-red-400 p-1 bg-white"
-//               src={image.srcImg}
-//               alt={image.label}
-//             />
-
-//             <div className="text-center mt-1 text-xs text-gray-500">
-//               ReLU {i + 1}
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//       <div>
-//         <FirstMaxPoolLayer
-//           circle_class_name="max-layer-circle"
-//           path_class_name="max-layer-path"
-//           containerRef={containerRef_}
-//           parentBoxRefs={MaxLayerRefs}
-//           childBoxRefs={reluLayerRefs}
-//           images={images}
-//           svgRef={svgRef_}
-//         />
-//       </div>
-//     </div>
-//   );
-// };
 
 export { ReluLayerComp };

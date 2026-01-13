@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type SetStateAction } from "react";
 import { classifyNdRGB, getimgData } from "./Apis/Image";
 import { VisualizationContainer } from "./components/layers";
 import { ConvolutionMap } from "./components/ConvVisual";
 
 const App = () => {
   const [image, setImage] = useState<File | null>(null);
-  const [featImages, setFeatImages] = useState<string[]>([""]);
+  const [featImages, setFeatImages] = useState<string[][]>([[""]]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [images, setImages] = useState<{
     ImageR: string;
@@ -37,26 +37,31 @@ const App = () => {
           ImageB: `data:image/png;base64,${ImageB}`,
         });
       }
-      const res2 = await getimgData(formData, 0);
+      const res2 = await getimgData(formData);
 
       if (res2?.success) {
-        const featImgs = [];
-        for (let i = 0; i < res2.firstConvLayer.length; i++) {
-          const featImg = `data:image/png;base64,${res2.firstConvLayer[i]}`;
-          featImgs.push(featImg);
-        }
-        setFeatImages(featImgs);
+        const allLayersData: SetStateAction<string[][]> = [];
+        const indices = [0, 2, 5, 7, 8, 10, 12, 13, 15, 17, 18];
+        indices.forEach((index) => {
+          const layerKey = `layer_${index}`;
+          if (res2.data[layerKey]) {
+            const featImages = res2.data[layerKey].map(
+              (img) => `data:image/png;base64,${img}`
+            );
+            allLayersData.push(featImages);
+          }
+        });
+        setFeatImages(allLayersData);
       }
 
       setLoading(false);
     };
 
     sendImage();
-
-    if (featImages[0]) {
-      console.log(featImages);
-    }
   }, [image]);
+  if (loading) {
+    return <div>Loading ...</div>;
+  }
 
   return (
     <div className="w-full relative min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
