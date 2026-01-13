@@ -10,13 +10,8 @@ interface CellDataProp {
   result: string;
 }
 
-interface MathGridDataProp {
-  CellData: CellDataProp[];
-  sum: string;
-}
 interface inputProp {
   mode: string;
-  ConvVisualHandler: () => void;
   imgSrc: string;
   resultImgSrc: string;
   autoPlaySpeed: number;
@@ -42,13 +37,12 @@ const getPixelValue = (
 };
 export const ConvolutionVisualizer = ({
   mode,
-  ConvVisualHandler,
+
   imgSrc,
   resultImgSrc,
   autoPlaySpeed = 500,
   kernel,
 }: inputProp) => {
-  console.log(imgSrc, resultImgSrc, autoPlaySpeed, kernel);
   const [hoverPos, setHoverPos] = useState<{ x: number; y: number }>({
     x: 1,
     y: 1,
@@ -166,10 +160,7 @@ export const ConvolutionVisualizer = ({
 
   return (
     <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden mt-10">
-      <div
-        className=" absolute right-5 top-12.75 cursor-pointer"
-        onClick={ConvVisualHandler}
-      >
+      <div className=" absolute right-5 top-12.75 cursor-pointer">
         <ImCancelCircle />
       </div>
       <div className="p-8 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">

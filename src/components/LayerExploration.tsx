@@ -4,28 +4,31 @@ import { ConvolutionVisualizer } from "./ConvolutionVisualizer";
 import type { Point } from "./layers";
 
 interface ConvolutionFiltersProp {
-  nextLayerImg: string;
-  firstLayerImgs: string[];
+  outputFeatureMap: string;
+  inputFeatureMaps: string[];
 }
 
 interface ConvolutionFiltersProp {
-  firstLayerImgs: string[];
-  nextLayerImg: string;
+  inputFeatureMaps: string[];
+  outputFeatureMap: string;
+}
+interface LayerExplorationModalProp {
+  modelPopUp: boolean;
+  outputFeatureMap: string;
+  inputFeatureMaps: string[];
 }
 
-const ConvolutionFilters = ({
-  firstLayerImgs,
-  nextLayerImg,
+const FeatureFlowView = ({
+  inputFeatureMaps,
+  outputFeatureMap,
 }: ConvolutionFiltersProp) => {
-  const ConvVisualHandler = () => {
-    setConvVisual(!convVisual);
-  };
-  const ConvVisualFunc = (src: string, id: number) => {
-    setConvVisual(!convVisual);
-    console.log(src, id);
+  const [channel, setChannel] = useState<string>("");
+  const showMathDetailHandler = (src: string, id: number) => {
+    setShowMathDetail(!showMathDetail);
+    setChannel(src);
   };
 
-  const [convVisual, setConvVisual] = useState(false);
+  const [showMathDetail, setShowMathDetail] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -89,7 +92,7 @@ const ConvolutionFilters = ({
         const pathNode = path.node() as SVGPathElement;
         const pathLength = pathNode.getTotalLength();
 
-        if (!convVisual) {
+        if (!showMathDetail) {
           const circle = svg
             .append("circle")
             .attr("class", "second-layer-circle")
@@ -129,7 +132,7 @@ const ConvolutionFilters = ({
       resizeObserver.disconnect();
       window.removeEventListener("resize", drawConnections);
     };
-  }, [firstLayerImgs, nextLayerImg, convVisual]);
+  }, [inputFeatureMaps, outputFeatureMap, showMathDetail]);
 
   const DEFAULT_KERNEL = [
     [1, 2, 3],
@@ -151,16 +154,18 @@ const ConvolutionFilters = ({
 
       <div
         className={`${
-          convVisual == true ? "opacity-40" : "opacity-100"
+          showMathDetail == true ? "opacity-40" : "opacity-100"
         } relative z-10 ${
-          firstLayerImgs.length > 5 ? "grid grid-cols-2" : "flex-col flex gap-4"
+          inputFeatureMaps.length > 5
+            ? "grid grid-cols-2"
+            : "flex-col flex gap-4"
         } gap-4 max-h-screen py-4
          overflow-hidden`}
       >
-        {firstLayerImgs.map((channel, i) => (
+        {inputFeatureMaps.map((channel, i) => (
           <div
             onClick={() => {
-              ConvVisualFunc(channel, i);
+              showMathDetailHandler(channel, i);
             }}
             ref={(el) => {
               inputRefs.current[i] = el;
@@ -190,11 +195,11 @@ const ConvolutionFilters = ({
       <div
         ref={outputRef}
         className={`${
-          convVisual == true ? "opacity-40" : "opacity-100"
+          showMathDetail == true ? "opacity-40" : "opacity-100"
         } relative z-10 flex flex-col items-center`}
       >
         <img
-          src={nextLayerImg}
+          src={outputFeatureMap}
           alt="Output Preview"
           className="w-32 h-32 md:w-64 md:h-64 object-cover rounded-xl shadow-2xl border-4 border-white"
         />
@@ -203,13 +208,12 @@ const ConvolutionFilters = ({
         </div>
       </div>
 
-      {convVisual && (
+      {showMathDetail && (
         <div className="absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-2xl">
           <ConvolutionVisualizer
             mode={"Relu"}
-            ConvVisualHandler={ConvVisualHandler}
-            imgSrc="src\components\galcier.jpg"
-            resultImgSrc="src\components\galcier.jpg"
+            imgSrc={channel}
+            resultImgSrc={channel}
             autoPlaySpeed={1000}
             kernel={{ data: DEFAULT_KERNEL }}
           />
@@ -219,17 +223,11 @@ const ConvolutionFilters = ({
   );
 };
 
-export default ConvolutionFilters;
-interface ConvolutionMapProp {
-  modelPopUp: boolean;
-  nextLayerImg: string;
-  firstLayerImgs: string[];
-}
-export const ConvolutionMap = ({
+export const LayerExplorationModal = ({
   modelPopUp,
-  nextLayerImg,
-  firstLayerImgs,
-}: ConvolutionMapProp) => {
+  outputFeatureMap,
+  inputFeatureMaps,
+}: LayerExplorationModalProp) => {
   useEffect(() => {
     if (modelPopUp) {
       document.body.style.overflow = "hidden";
@@ -239,15 +237,15 @@ export const ConvolutionMap = ({
     return () => {
       document.body.style.overflow = "auto";
     };
-  }, [modelPopUp, firstLayerImgs, nextLayerImg]);
+  }, [modelPopUp, inputFeatureMaps, outputFeatureMap]);
   return (
     <div>
       {modelPopUp && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="w-full h-full overflow-auto flex items-center justify-center">
-            <ConvolutionFilters
-              nextLayerImg={nextLayerImg}
-              firstLayerImgs={firstLayerImgs}
+            <FeatureFlowView
+              outputFeatureMap={outputFeatureMap}
+              inputFeatureMaps={inputFeatureMaps}
             />
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { useEffect, useState, type SetStateAction } from "react";
 import { classifyNdRGB, getimgData } from "./Apis/Image";
 import { VisualizationContainer } from "./components/layers";
-import { ConvolutionMap } from "./components/ConvVisual";
+import { LayerExplorationModal } from "./components/LayerExploration";
 
 const App = () => {
   const [image, setImage] = useState<File | null>(null);
@@ -143,9 +143,9 @@ const App = () => {
           />
         )}
 
-        <ConvolutionMap
-          nextLayerImg={nextLayerImg}
-          firstLayerImgs={firstLayerImgs}
+        <LayerExplorationModal
+          outputFeatureMap={nextLayerImg}
+          inputFeatureMaps={firstLayerImgs}
           modelPopUp={modelpopUp}
         />
 
