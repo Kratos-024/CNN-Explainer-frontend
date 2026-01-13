@@ -12,7 +12,11 @@ const App = () => {
     ImageG: string;
     ImageB: string;
   }>({ ImageR: "", ImageG: "", ImageB: "" });
+  const [animation, setAnimation] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
+  const animationHandler = () => {
+    setAnimation(!animation);
+  };
   useEffect(() => {
     if (!image) return;
 
@@ -67,7 +71,7 @@ const App = () => {
           Upload Image to Visualize CNN Flow
         </h2>
 
-        <div className="mb-8">
+        <div className="mb-8 flex gap-7">
           <label className="px-6 py-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition bg-white shadow-sm inline-block">
             <span className="text-gray-700">
               {image ? image.name : "Choose an image"}
@@ -79,6 +83,32 @@ const App = () => {
               className="hidden"
             />
           </label>
+          <label
+            className=" inline-flex items-center 
+           cursor-pointer"
+          >
+            <input
+              onClick={animationHandler}
+              type="checkbox"
+              value=""
+              className="sr-only peer"
+            />
+            <div
+              className="relative  bg-blue-600 w-11 h-5 
+         
+       
+        rounded-full  peer peer-checked:after:translate-x-full
+         rtl:peer-checked:after:-translate-x-full
+         peer-checked:after:border-buffer after:content-['']
+          after:absolute after:top-0.5 after:start-1.5 
+           after:bg-white after:rounded-full
+           after:h-4 after:w-4 after:transition-all
+           peer-checked:bg-brand"
+            ></div>
+            <span className="select-none ms-3 text-sm font-medium text-heading">
+              Animation
+            </span>
+          </label>
         </div>
 
         {loading && (
@@ -89,6 +119,7 @@ const App = () => {
 
         {imagePreview && (
           <VisualizationContainer
+            animation={animation}
             featImages={featImages}
             imagePreview={imagePreview}
             images={images}

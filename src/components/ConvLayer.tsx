@@ -1,21 +1,25 @@
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 import type { Point } from "./layers";
-import type { FirstConvProps } from "./RGBLayers";
+import type { LayersProps } from "./RGBLayers";
 
-//v"second-layer-path"
-//second-layer-circle"
-const drawConnections = (
+export const drawConnections = (
+  animation: boolean,
   svgRef: React.RefObject<SVGSVGElement | null>,
   containerRef: React.RefObject<HTMLDivElement | null>,
-  images: { label: string; srcImg: string }[],
+  images: { label: string; srcImg: string }[] | { text: string }[],
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>,
   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>,
   path_class_name: string,
   circle_class_name: string
 ) => {
-  if (!svgRef.current || !containerRef.current) return;
-
+  if (
+    !svgRef.current ||
+    !containerRef.current ||
+    !parentBoxRefs.current ||
+    !childBoxRefs.current
+  )
+    return;
   const svg = d3.select(svgRef.current);
   svg.selectAll(`.${path_class_name}`).remove();
   svg.selectAll(`.${circle_class_name}`).remove();
@@ -68,32 +72,34 @@ const drawConnections = (
 
       const pathNode = path.node() as SVGPathElement;
       const pathLength = pathNode.getTotalLength();
+      if (animation) {
+        const circle = svg
+          .append("circle")
+          .attr("class", circle_class_name)
+          .attr("r", 3)
+          .attr("fill", "black")
+          .attr("opacity", 0.8);
 
-      const circle = svg
-        .append("circle")
-        .attr("class", circle_class_name)
-        .attr("r", 3)
-        .attr("fill", "black")
-        .attr("opacity", 0.8);
+        const animate = () => {
+          circle
+            .transition()
+            .duration(2000 + Math.random() * 1000)
+            .ease(d3.easeLinear)
+            .attrTween("transform", () => (t: number) => {
+              const point = pathNode.getPointAtLength(t * pathLength);
+              return `translate(${point.x}, ${point.y})`;
+            })
+            .on("end", animate);
+        };
 
-      const animate = () => {
-        circle
-          .transition()
-          .duration(2000 + Math.random() * 1000)
-          .ease(d3.easeLinear)
-          .attrTween("transform", () => (t: number) => {
-            const point = pathNode.getPointAtLength(t * pathLength);
-            return `translate(${point.x}, ${point.y})`;
-          })
-          .on("end", animate);
-      };
-
-      setTimeout(() => animate(), childIndex * 100 + parentIndex * 300);
+        setTimeout(() => animate(), childIndex * 100 + parentIndex * 300);
+      }
     });
   });
 };
 
 const ConvLayerComp = ({
+  animation,
   images,
   childBoxRefs,
   parentBoxRefs,
@@ -104,6 +110,7 @@ const ConvLayerComp = ({
   relu,
   ReluLayer,
 }: {
+  animation: boolean;
   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   svgRef: React.RefObject<SVGSVGElement | null>;
@@ -112,12 +119,24 @@ const ConvLayerComp = ({
   path_class_name: string;
   circle_class_name: string;
   relu: boolean;
-  ReluLayer?: React.ComponentType<FirstConvProps>;
+  ReluLayer?: React.ComponentType<LayersProps>;
 }) => {
   useEffect(() => {
-    const timer = setTimeout(drawConnections, 200);
+    const timer = setTimeout(() => {
+      drawConnections(
+        animation,
+        svgRef,
+        containerRef,
+        images,
+        parentBoxRefs,
+        childBoxRefs,
+        path_class_name,
+        circle_class_name
+      );
+    }, 200);
     const resizeObserver = new ResizeObserver(() =>
       drawConnections(
+        animation,
         svgRef,
         containerRef,
         images,
@@ -133,6 +152,7 @@ const ConvLayerComp = ({
     }
     window.addEventListener("resize", () => {
       drawConnections(
+        animation,
         svgRef,
         containerRef,
         images,
@@ -148,6 +168,7 @@ const ConvLayerComp = ({
       resizeObserver.disconnect();
       window.removeEventListener("resize", () => {
         drawConnections(
+          animation,
           svgRef,
           containerRef,
           images,
@@ -160,7 +181,7 @@ const ConvLayerComp = ({
     };
   }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
 
-  const svgRef_ = useRef<SVGSVGElement>(null);
+  const svgRef_ = useRef<SVGSVGElement | null>(null);
   const containerRef_ = useRef<HTMLDivElement>(null);
   const convLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const reluLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -188,7 +209,7 @@ const ConvLayerComp = ({
           >
             <img
               className="w-24 h-24 rounded-2xl shadow-sm"
-              src={image.srcImg}
+              src={image.srcImg || "null"}
               alt={image.label}
             />
             <div className="text-center mt-1 text-xs text-gray-500">
@@ -200,6 +221,7 @@ const ConvLayerComp = ({
       <div>
         {relu && RL && (
           <RL
+            animation={animation}
             svgRef={svgRef_}
             parentBoxRefs={convLayerRefs}
             images={images}
@@ -325,116 +347,116 @@ const ConvLayerComp = ({
 //   );
 // };
 
-const ThirdConvLayer = ({
-  path_class_name,
-  circle_class_name,
-  images,
-  childBoxRefs,
-  parentBoxRefs,
-  svgRef,
-  containerRef,
-}: {
-  childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
-  parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
-  svgRef: React.RefObject<SVGSVGElement | null>;
-  containerRef: React.RefObject<HTMLDivElement | null>;
-  images: { label: string; srcImg: string }[];
-  path_class_name: string;
-  circle_class_name: string;
-}) => {
-  useEffect(() => {
-    const timer = setTimeout(drawConnections, 200);
-    const resizeObserver = new ResizeObserver(() =>
-      drawConnections(
-        svgRef,
-        containerRef,
-        images,
-        parentBoxRefs,
-        childBoxRefs,
-        path_class_name,
-        circle_class_name
-      )
-    );
+// const ThirdConvLayer = ({
+//   path_class_name,
+//   circle_class_name,
+//   images,
+//   childBoxRefs,
+//   parentBoxRefs,
+//   svgRef,
+//   containerRef,
+// }: {
+//   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
+//   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
+//   svgRef: React.RefObject<SVGSVGElement | null>;
+//   containerRef: React.RefObject<HTMLDivElement | null>;
+//   images: { label: string; srcImg: string }[];
+//   path_class_name: string;
+//   circle_class_name: string;
+// }) => {
+//   useEffect(() => {
+//     const timer = setTimeout(drawConnections, 200);
+//     const resizeObserver = new ResizeObserver(() =>
+//       drawConnections(
+//         svgRef,
+//         containerRef,
+//         images,
+//         parentBoxRefs,
+//         childBoxRefs,
+//         path_class_name,
+//         circle_class_name
+//       )
+//     );
 
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
-    }
-    window.addEventListener("resize", () => {
-      drawConnections(
-        svgRef,
-        containerRef,
-        images,
-        parentBoxRefs,
-        childBoxRefs,
-        path_class_name,
-        circle_class_name
-      );
-    });
+//     if (containerRef.current) {
+//       resizeObserver.observe(containerRef.current);
+//     }
+//     window.addEventListener("resize", () => {
+//       drawConnections(
+//         svgRef,
+//         containerRef,
+//         images,
+//         parentBoxRefs,
+//         childBoxRefs,
+//         path_class_name,
+//         circle_class_name
+//       );
+//     });
 
-    return () => {
-      clearTimeout(timer);
-      resizeObserver.disconnect();
-      window.removeEventListener("resize", () => {
-        drawConnections(
-          svgRef,
-          containerRef,
-          images,
-          parentBoxRefs,
-          childBoxRefs,
-          path_class_name,
-          circle_class_name
-        );
-      });
-    };
-  }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
-  const svgRef_ = useRef<SVGSVGElement>(null);
-  const containerRef_ = useRef<HTMLDivElement>(null);
-  const convLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const reluLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
+//     return () => {
+//       clearTimeout(timer);
+//       resizeObserver.disconnect();
+//       window.removeEventListener("resize", () => {
+//         drawConnections(
+//           svgRef,
+//           containerRef,
+//           images,
+//           parentBoxRefs,
+//           childBoxRefs,
+//           path_class_name,
+//           circle_class_name
+//         );
+//       });
+//     };
+//   }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
+//   const svgRef_ = useRef<SVGSVGElement>(null);
+//   const containerRef_ = useRef<HTMLDivElement>(null);
+//   const convLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
+//   const reluLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  return (
-    <div
-      ref={containerRef_}
-      className="relative flex flex-col items-center mt-24 w-full"
-    >
-      <svg
-        ref={svgRef_}
-        className="absolute top-0 left-0 w-full h-full pointer-events-none"
-        style={{ zIndex: 0 }}
-      />
+//   return (
+//     <div
+//       ref={containerRef_}
+//       className="relative flex flex-col items-center mt-24 w-full"
+//     >
+//       <svg
+//         ref={svgRef_}
+//         className="absolute top-0 left-0 w-full h-full pointer-events-none"
+//         style={{ zIndex: 0 }}
+//       />
 
-      <div className="flex gap-6 justify-center items-center z-10">
-        {images.map((image, i) => (
-          <div
-            key={i}
-            ref={(el) => {
-              if (childBoxRefs.current) childBoxRefs.current[i] = el;
-              convLayerRefs.current[i] = el;
-            }}
-            className="flex flex-col items-center rounded-2xl bg-white"
-          >
-            <img
-              className="w-24 h-24 rounded-2xl shadow-sm"
-              src={image.srcImg}
-              alt={image.label}
-            />
-            <div className="text-center mt-1 text-xs text-gray-500">
-              {image.label}
-            </div>
-          </div>
-        ))}
-      </div>
-      {/* 
-      <SecondReluLayer
-        path_class_name="relu-2-layer-path"
-        circle_class_name="relu-2-layer-circle"
-        containerRef={containerRef_}
-        parentBoxRefs={convLayerRefs}
-        childBoxRefs={reluLayerRefs}
-        images={images}
-        svgRef={svgRef_}
-      /> */}
-    </div>
-  );
-};
-export { ConvLayerComp, ThirdConvLayer };
+//       <div className="flex gap-6 justify-center items-center z-10">
+//         {images.map((image, i) => (
+//           <div
+//             key={i}
+//             ref={(el) => {
+//               if (childBoxRefs.current) childBoxRefs.current[i] = el;
+//               convLayerRefs.current[i] = el;
+//             }}
+//             className="flex flex-col items-center rounded-2xl bg-white"
+//           >
+//             <img
+//               className="w-24 h-24 rounded-2xl shadow-sm"
+//               src={image.srcImg}
+//               alt={image.label}
+//             />
+//             <div className="text-center mt-1 text-xs text-gray-500">
+//               {image.label}
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+//       {/*
+//       <SecondReluLayer
+//         path_class_name="relu-2-layer-path"
+//         circle_class_name="relu-2-layer-circle"
+//         containerRef={containerRef_}
+//         parentBoxRefs={convLayerRefs}
+//         childBoxRefs={reluLayerRefs}
+//         images={images}
+//         svgRef={svgRef_}
+//       /> */}
+//     </div>
+//   );
+// };
+export { ConvLayerComp };

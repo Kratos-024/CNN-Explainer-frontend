@@ -2,23 +2,34 @@ import { useRef } from "react";
 import { ConvLayerComp } from "./ConvLayer";
 import { ReluLayerComp } from "./ReluLayer";
 import { MaxPoolLayer } from "./MaxPool";
-export interface FirstConvProps {
+import { ResultantLayerComp } from "./ResultantLayerComp";
+export interface LayersProps {
+  animation: boolean;
   svgRef: React.RefObject<SVGSVGElement | null>;
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   images: { label: string; srcImg: string }[];
   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
-
+export interface ResultantLayersProps {
+  animation: boolean;
+  svgRef: React.RefObject<SVGSVGElement | null>;
+  parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
+  results: { text: string }[];
+  childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+}
 const FirstConvLayer = ({
+  animation,
   svgRef,
   parentBoxRefs,
   images,
   childBoxRefs,
   containerRef,
-}: FirstConvProps) => {
+}: LayersProps) => {
   return (
     <ConvLayerComp
+      animation={animation}
       images={images}
       childBoxRefs={childBoxRefs}
       parentBoxRefs={parentBoxRefs}
@@ -33,14 +44,16 @@ const FirstConvLayer = ({
 };
 
 const FirstReluLayer = ({
+  animation,
   svgRef,
   parentBoxRefs,
   images,
   childBoxRefs,
   containerRef,
-}: FirstConvProps) => {
+}: LayersProps) => {
   return (
     <ReluLayerComp
+      animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
       containerRef={containerRef}
@@ -55,14 +68,16 @@ const FirstReluLayer = ({
 };
 
 const SecondConvLayer = ({
+  animation,
   svgRef,
   parentBoxRefs,
   images,
   childBoxRefs,
   containerRef,
-}: FirstConvProps) => {
+}: LayersProps) => {
   return (
     <ConvLayerComp
+      animation={animation}
       path_class_name="secondConv-layer-path"
       circle_class_name="secondConv-layer-circle"
       images={images}
@@ -77,14 +92,16 @@ const SecondConvLayer = ({
 };
 
 const SecondReluLayer = ({
+  animation,
   svgRef,
   parentBoxRefs,
   images,
   childBoxRefs,
   containerRef,
-}: FirstConvProps) => {
+}: LayersProps) => {
   return (
     <ReluLayerComp
+      animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
       containerRef={containerRef}
@@ -99,14 +116,16 @@ const SecondReluLayer = ({
 };
 
 const FirstMaxPoolLayer = ({
+  animation,
   svgRef,
   parentBoxRefs,
   images,
   childBoxRefs,
   containerRef,
-}: FirstConvProps) => {
+}: LayersProps) => {
   return (
     <MaxPoolLayer
+      animation={animation}
       circle_class_name="max-layer-circle"
       path_class_name="max-layer-path"
       containerRef={containerRef}
@@ -121,14 +140,16 @@ const FirstMaxPoolLayer = ({
 };
 
 const ThirdConvLayer = ({
+  animation,
   svgRef,
   parentBoxRefs,
   images,
   childBoxRefs,
   containerRef,
-}: FirstConvProps) => {
+}: LayersProps) => {
   return (
     <ConvLayerComp
+      animation={animation}
       path_class_name="thirdConv-layer-path"
       circle_class_name="thirdConv-layer-circle"
       images={images}
@@ -137,12 +158,126 @@ const ThirdConvLayer = ({
       svgRef={svgRef}
       containerRef={containerRef}
       relu={true}
-      ReluLayer={SecondReluLayer}
+      ReluLayer={ThirdReluLayer}
+    />
+  );
+};
+const ThirdReluLayer = ({
+  animation,
+  svgRef,
+  parentBoxRefs,
+  images,
+  childBoxRefs,
+  containerRef,
+}: LayersProps) => {
+  return (
+    <ReluLayerComp
+      animation={animation}
+      circle_class_name="relu-layer-circle"
+      path_class_name="relu-layer-path"
+      containerRef={containerRef}
+      parentBoxRefs={parentBoxRefs}
+      childBoxRefs={childBoxRefs}
+      images={images}
+      svgRef={svgRef}
+      nextLayer={true}
+      NextConvLayer={FourthConvLayer}
     />
   );
 };
 
+const FourthConvLayer = ({
+  animation,
+  svgRef,
+  parentBoxRefs,
+  images,
+  childBoxRefs,
+  containerRef,
+}: LayersProps) => {
+  return (
+    <ConvLayerComp
+      animation={animation}
+      path_class_name="thirdConv-layer-path"
+      circle_class_name="thirdConv-layer-circle"
+      images={images}
+      childBoxRefs={childBoxRefs}
+      parentBoxRefs={parentBoxRefs}
+      svgRef={svgRef}
+      containerRef={containerRef}
+      relu={true}
+      ReluLayer={FourthReluLayer}
+    />
+  );
+};
+const FourthReluLayer = ({
+  animation,
+  svgRef,
+  parentBoxRefs,
+  images,
+  childBoxRefs,
+  containerRef,
+}: LayersProps) => {
+  return (
+    <ReluLayerComp
+      animation={animation}
+      circle_class_name="relu-layer-circle"
+      path_class_name="relu-layer-path"
+      containerRef={containerRef}
+      parentBoxRefs={parentBoxRefs}
+      childBoxRefs={childBoxRefs}
+      images={images}
+      svgRef={svgRef}
+      nextLayer={true}
+      NextConvLayer={SecondMaxPoolLayer}
+    />
+  );
+};
+const SecondMaxPoolLayer = ({
+  animation,
+  svgRef,
+  parentBoxRefs,
+  images,
+  childBoxRefs,
+  containerRef,
+}: LayersProps) => {
+  return (
+    <MaxPoolLayer
+      animation={animation}
+      circle_class_name="max-layer-circle"
+      path_class_name="max-layer-path"
+      containerRef={containerRef}
+      parentBoxRefs={parentBoxRefs}
+      childBoxRefs={childBoxRefs}
+      images={images}
+      svgRef={svgRef}
+      nextLayer={true}
+      ResultantLayer={ResultLayer}
+    />
+  );
+};
+const ResultLayer = ({
+  animation,
+  svgRef,
+  parentBoxRefs,
+  results,
+  childBoxRefs,
+  containerRef,
+}: ResultantLayersProps) => {
+  return (
+    <ResultantLayerComp
+      animation={animation}
+      childBoxRefs={childBoxRefs}
+      parentBoxRefs={parentBoxRefs}
+      svgRef={svgRef}
+      containerRef={containerRef}
+      results={results}
+      circle_class_name="result-layer-circle"
+      path_class_name={"result_class"}
+    />
+  );
+};
 interface RGBLayersProps {
+  animation: boolean;
   featImages: string[];
   images: {
     ImageR: string;
@@ -151,7 +286,12 @@ interface RGBLayersProps {
   };
   boxRefs: React.RefObject<(HTMLDivElement | null)[]>;
 }
-const RGBLayers = ({ featImages, images, boxRefs }: RGBLayersProps) => {
+const RGBLayers = ({
+  animation,
+  featImages,
+  images,
+  boxRefs,
+}: RGBLayersProps) => {
   const channels = [
     { src: images.ImageR, label: "Red Channel", color: "border-red-300" },
     { src: images.ImageG, label: "Green Channel", color: "border-green-300" },
@@ -209,6 +349,7 @@ const RGBLayers = ({ featImages, images, boxRefs }: RGBLayersProps) => {
 
       <div>
         <FirstConvLayer
+          animation={animation}
           images={grandChildren}
           childBoxRefs={childBoxRefs}
           parentBoxRefs={boxRefs}

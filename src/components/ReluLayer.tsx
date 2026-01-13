@@ -2,9 +2,9 @@ import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 import type { Point } from "./layers";
 import type { FirstConvProps } from "./RGBLayers";
-//relu-layer-path
-//relu-layer-circle
+
 export const drawReluConnections = (
+  animation: boolean,
   svgRef: React.RefObject<SVGSVGElement | null>,
   containerRef: React.RefObject<HTMLDivElement | null>,
   images: { label: string; srcImg: string }[],
@@ -13,8 +13,13 @@ export const drawReluConnections = (
   path_class_name: string,
   circle_class_name: string
 ) => {
-  if (!svgRef.current || !containerRef.current) return;
-
+  if (
+    !svgRef.current ||
+    !containerRef.current ||
+    !parentBoxRefs.current ||
+    !childBoxRefs.current
+  )
+    return;
   const svg = d3.select(svgRef.current);
   svg.selectAll(`.${path_class_name}`).remove();
   svg.selectAll(`.${circle_class_name}`).remove();
@@ -73,27 +78,28 @@ export const drawReluConnections = (
 
     const pathNode = path.node() as SVGPathElement;
     const pathLength = pathNode.getTotalLength();
+    if (animation) {
+      const circle = svg
+        .append("circle")
+        .attr("class", circle_class_name)
+        .attr("r", 4)
+        .attr("fill", "#ef4444")
+        .attr("opacity", 1);
 
-    const circle = svg
-      .append("circle")
-      .attr("class", circle_class_name)
-      .attr("r", 4)
-      .attr("fill", "#ef4444")
-      .attr("opacity", 1);
+      const animate = () => {
+        circle
+          .transition()
+          .duration(2000 + Math.random() * 1000)
+          .ease(d3.easeLinear)
+          .attrTween("transform", () => (t: number) => {
+            const point = pathNode.getPointAtLength(t * pathLength);
+            return `translate(${point.x}, ${point.y})`;
+          })
+          .on("end", animate);
+      };
 
-    const animate = () => {
-      circle
-        .transition()
-        .duration(2000 + Math.random() * 1000)
-        .ease(d3.easeLinear)
-        .attrTween("transform", () => (t: number) => {
-          const point = pathNode.getPointAtLength(t * pathLength);
-          return `translate(${point.x}, ${point.y})`;
-        })
-        .on("end", animate);
-    };
-
-    setTimeout(() => animate(), index * 200);
+      setTimeout(() => animate(), index * 200);
+    }
   });
 };
 const ReluLayerComp = ({
@@ -107,7 +113,9 @@ const ReluLayerComp = ({
   nextLayer,
   NextConvLayer,
   NextMaxPoolLayer,
+  animation,
 }: {
+  animation: boolean;
   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   svgRef: React.RefObject<SVGSVGElement | null>;
@@ -120,9 +128,21 @@ const ReluLayerComp = ({
   NextMaxPoolLayer?: React.ComponentType<FirstConvProps>;
 }) => {
   useEffect(() => {
-    const timer = setTimeout(drawReluConnections, 200);
+    const timer = setTimeout(() => {
+      drawReluConnections(
+        (animation = animation),
+        svgRef,
+        containerRef,
+        images,
+        parentBoxRefs,
+        childBoxRefs,
+        path_class_name,
+        circle_class_name
+      );
+    }, 200);
     const resizeObserver = new ResizeObserver(() =>
       drawReluConnections(
+        (animation = animation),
         svgRef,
         containerRef,
         images,
@@ -138,6 +158,7 @@ const ReluLayerComp = ({
     }
     window.addEventListener("resize", () => {
       drawReluConnections(
+        (animation = animation),
         svgRef,
         containerRef,
         images,
@@ -153,6 +174,7 @@ const ReluLayerComp = ({
       resizeObserver.disconnect();
       window.removeEventListener("resize", () => {
         drawReluConnections(
+          (animation = animation),
           svgRef,
           containerRef,
           images,
@@ -165,43 +187,10 @@ const ReluLayerComp = ({
     };
   }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
 
-  const svgRef_ = useRef<SVGSVGElement>(null);
+  const svgRef_ = useRef<SVGSVGElement | null>(null);
   const containerRef_ = useRef<HTMLDivElement>(null);
   const nextLayerBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const localBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
-  // let ConvLayer = () => {
-  //   return <></>;
-  // };
-  // if (nextConv) {
-  //   ConvLayer = () => {
-  //     return (
-  //       <ConvLayerComp
-  //         path_class_name="secondConv-layer-path"
-  //         circle_class_name="secondConv-layer-circle"
-  //         images={images}
-  //         childBoxRefs={nextLayerBoxRefs}
-  //         parentBoxRefs={localBoxRefs}
-  //         svgRef={svgRef_}
-  //         containerRef={containerRef_}
-  //         relu={true}
-  //       />
-  //     );
-  //   };
-  // }
-  // // const SecondConvLayer = () => {
-  // //   return (
-  // //     <FirstConvLayer
-  // //       path_class_name="secondConv-layer-path"
-  // //       circle_class_name="secondConv-layer-circle"
-  // //       images={images}
-  // //       childBoxRefs={nextLayerBoxRefs}
-  // //       parentBoxRefs={localBoxRefs}
-  // //       svgRef={svgRef_}
-  // //       containerRef={containerRef_}
-  // //       relu={false}
-  // //     />
-  // //   );
-  // // };
   const NCL = NextConvLayer;
   const NMPL = NextMaxPoolLayer;
   return (
@@ -229,7 +218,7 @@ const ReluLayerComp = ({
                 localBoxRefs.current[i] = el;
               }}
               className="w-24 h-24 rounded-2xl border-2 border-dashed border-red-400 p-1 bg-white"
-              src={image.srcImg}
+              src={image.srcImg || "null"}
               alt={image.label}
             />
 
@@ -242,6 +231,7 @@ const ReluLayerComp = ({
       <div className=" mt-16">
         {nextLayer && NCL && (
           <NCL
+            animation={animation}
             images={images}
             containerRef={containerRef_}
             svgRef={svgRef_}
@@ -251,6 +241,7 @@ const ReluLayerComp = ({
         )}
         {nextLayer && NMPL && (
           <NMPL
+            animation={animation}
             images={images}
             containerRef={containerRef_}
             svgRef={svgRef_}

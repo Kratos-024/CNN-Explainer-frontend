@@ -8,6 +8,7 @@ interface Point {
 }
 
 interface VisualizationContainerProps {
+  animation: boolean;
   featImages: string[];
   imagePreview: string;
   images: {
@@ -18,6 +19,7 @@ interface VisualizationContainerProps {
 }
 
 const VisualizationContainer = ({
+  animation,
   featImages,
   imagePreview,
   images,
@@ -119,7 +121,12 @@ const VisualizationContainer = ({
         </div>
       </div>
 
-      <RGBLayers featImages={featImages} images={images} boxRefs={boxRefs} />
+      <RGBLayers
+        animation={animation}
+        featImages={featImages}
+        images={images}
+        boxRefs={boxRefs}
+      />
     </div>
   );
 };
