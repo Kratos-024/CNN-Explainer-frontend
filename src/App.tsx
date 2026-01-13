@@ -1,14 +1,13 @@
-import { useEffect, useState, type SetStateAction } from "react";
+import { useEffect, useState } from "react";
 import { classifyNdRGB, getimgData } from "./Apis/Image";
 import { VisualizationContainer } from "./components/layers";
 import { LayerExplorationModal } from "./components/LayerExploration";
 
 const App = () => {
   const [image, setImage] = useState<File | null>(null);
-  const [featImages, setFeatImages] = useState<string[][]>([[""]]);
+  const [CnnData, setCnnData] = useState<string[][]>([[]]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const allLayersData: SetStateAction<string[][]> = [];
-
+  const allLayersData: string[][] = [];
   const [animation, setAnimation] = useState<boolean>(true);
   const [loading, setLoading] = useState(false);
   const animationHandler = () => {
@@ -27,15 +26,15 @@ const App = () => {
       formData.append("Img", image);
       const res = await classifyNdRGB(formData);
       if (res) {
-        const { predicted_class, ImageR, ImageG, ImageB } = res;
+        const { softMax_prob, ImageR, ImageG, ImageB } = res;
         allLayersData.push([
           `data:image/png;base64,${ImageR}`,
           `data:image/png;base64,${ImageG}`,
           `data:image/png;base64,${ImageB}`,
         ]);
+        allLayersData.push(softMax_prob);
       }
       const res2 = await getimgData(formData);
-
       if (res2?.success) {
         const indices = [0, 2, 5, 7, 8, 10, 12, 13, 15, 17, 18];
         indices.forEach((index) => {
@@ -48,7 +47,7 @@ const App = () => {
           }
         });
 
-        setFeatImages(allLayersData);
+        setCnnData(allLayersData);
       }
 
       setLoading(false);
@@ -138,7 +137,7 @@ const App = () => {
               setModelpopUpHandler(first, next);
             }}
             animation={animation}
-            featImages={featImages}
+            featImages={CnnData}
             imagePreview={imagePreview}
           />
         )}

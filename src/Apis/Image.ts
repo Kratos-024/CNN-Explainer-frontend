@@ -2,7 +2,7 @@ const api_uri = "http://127.0.0.1:8000";
 
 interface ImageResponse {
   message: string;
-  predicted_class: string;
+  softMax_prob: string[];
   ImageR: string;
   ImageG: string;
   ImageB: string;

@@ -46,8 +46,6 @@ const MaxPoolLayer = ({
     };
   }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
 
-  const results = [["glacier", "mountains", "sea"]];
-
   const svgRef_ = useRef<SVGSVGElement>(null);
   const containerRef_ = useRef<HTMLDivElement>(null);
   const nextLayerBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -109,7 +107,7 @@ const MaxPoolLayer = ({
         {nextLayer && ResultL && (
           <ResultL
             animation={animation}
-            results={results}
+            results={images}
             childBoxRefs={nextLayerBoxRefs}
             parentBoxRefs={localBoxRefs}
             svgRef={svgRef_}

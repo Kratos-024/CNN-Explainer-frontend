@@ -36,7 +36,7 @@ const FirstConvLayer = ({
         setModelpopUpHandler(first, next);
       }}
       label={"Feature Map"}
-      index={1}
+      index={2}
       animation={animation}
       images={images}
       childBoxRefs={childBoxRefs}
@@ -66,7 +66,7 @@ const FirstReluLayer = ({
         setModelpopUpHandler(first, next);
       }}
       label={"Relu"}
-      index={2}
+      index={3}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -96,7 +96,7 @@ const SecondConvLayer = ({
         setModelpopUpHandler(first, next);
       }}
       label={"Feature Map"}
-      index={3}
+      index={4}
       animation={animation}
       path_class_name="secondConv-layer-path"
       circle_class_name="secondConv-layer-circle"
@@ -126,7 +126,7 @@ const SecondReluLayer = ({
         setModelpopUpHandler(first, next);
       }}
       label={"Relu"}
-      index={4}
+      index={5}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -156,7 +156,7 @@ const FirstMaxPoolLayer = ({
         setModelpopUpHandler(first, next);
       }}
       label={"Max Pool"}
-      index={5}
+      index={6}
       animation={animation}
       circle_class_name="max-layer-circle"
       path_class_name="max-layer-path"
@@ -186,7 +186,7 @@ const ThirdConvLayer = ({
         setModelpopUpHandler(first, next);
       }}
       label={"Feature Map"}
-      index={6}
+      index={7}
       animation={animation}
       path_class_name="thirdConv-layer-path"
       circle_class_name="thirdConv-layer-circle"
@@ -215,7 +215,7 @@ const ThirdReluLayer = ({
         setModelpopUpHandler(first, next);
       }}
       label={"Relu"}
-      index={7}
+      index={8}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -245,7 +245,7 @@ const FourthConvLayer = ({
         setModelpopUpHandler(first, next);
       }}
       label={"Feature Map"}
-      index={8}
+      index={9}
       animation={animation}
       path_class_name="thirdConv-layer-path"
       circle_class_name="thirdConv-layer-circle"
@@ -274,7 +274,7 @@ const FourthReluLayer = ({
         setModelpopUpHandler(first, next);
       }}
       label={"Relu"}
-      index={9}
+      index={10}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -303,7 +303,7 @@ const SecondMaxPoolLayer = ({
         setModelpopUpHandler(first, next);
       }}
       label={"Max Pool"}
-      index={10}
+      index={11}
       animation={animation}
       circle_class_name="max-layer-circle"
       path_class_name="max-layer-path"
@@ -385,7 +385,7 @@ const RGBLayers = ({
             <div
               className={`w-48 h-48 rounded-lg shadow-lg border-2 ${channel.color} overflow-hidden bg-gray-50`}
             >
-              {channel.src ? (
+              {channel.src && typeof channel.src === "string" ? (
                 <img
                   src={channel.src}
                   alt={channel.label}

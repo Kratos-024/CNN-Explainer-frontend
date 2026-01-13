@@ -21,8 +21,10 @@ const ResultantLayerComp = ({
   path_class_name: string;
 }) => {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      drawConnections(
+    const index = 1;
+    const drawConnect = () => {
+      return drawConnections(
+        index,
         animation,
         svgRef,
         containerRef,
@@ -30,53 +32,21 @@ const ResultantLayerComp = ({
         parentBoxRefs,
         childBoxRefs,
         path_class_name,
-        (circle_class_name = circle_class_name)
+        circle_class_name
       );
-    }, 200);
-    const resizeObserver = new ResizeObserver(() =>
-      drawConnections(
-        animation,
-        svgRef,
-        containerRef,
-        results,
-        parentBoxRefs,
-        childBoxRefs,
-        path_class_name,
-        (circle_class_name = circle_class_name)
-      )
-    );
+    };
+    const timer = setTimeout(drawConnect, 200);
+    const resizeObserver = new ResizeObserver(drawConnect);
 
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
     }
-    window.addEventListener("resize", () => {
-      drawConnections(
-        animation,
-        svgRef,
-        containerRef,
-        results,
-        parentBoxRefs,
-        childBoxRefs,
-        path_class_name,
-        (circle_class_name = circle_class_name)
-      );
-    });
+    window.addEventListener("resize", drawConnect);
 
     return () => {
       clearTimeout(timer);
       resizeObserver.disconnect();
-      window.removeEventListener("resize", () => {
-        drawConnections(
-          animation,
-          svgRef,
-          containerRef,
-          results,
-          parentBoxRefs,
-          childBoxRefs,
-          (path_class_name = path_class_name),
-          (circle_class_name = circle_class_name)
-        );
-      });
+      window.removeEventListener("resize", drawConnect);
     };
   }, [results, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
 
@@ -89,12 +59,11 @@ const ResultantLayerComp = ({
             ref={(el) => {
               if (childBoxRefs.current) childBoxRefs.current[i] = el; // Destination of RGB
             }}
-            className="flex flex-col items-center rounded-2xl bg-white"
           >
-            <span className="w-24 h-24 rounded-2xl shadow-sm">{result}</span>
+            <span>{result}</span>
           </div>
         ))}
-      </div>{" "}
+      </div>
     </div>
   );
 };
