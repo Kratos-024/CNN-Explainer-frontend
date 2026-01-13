@@ -4,17 +4,18 @@ import { ConvolutionVisualizer } from "./ConvolutionVisualizer";
 import type { Point } from "./layers";
 
 interface ConvolutionFiltersProp {
-  images: {
-    ImageR: string;
-    ImageG: string;
-    ImageB: string;
-  };
-  convolutedImage: string;
+  nextLayerImg: string;
+  firstLayerImgs: string[];
+}
+
+interface ConvolutionFiltersProp {
+  firstLayerImgs: string[];
+  nextLayerImg: string;
 }
 
 const ConvolutionFilters = ({
-  images,
-  convolutedImage,
+  firstLayerImgs,
+  nextLayerImg,
 }: ConvolutionFiltersProp) => {
   const ConvVisualHandler = () => {
     setConvVisual(!convVisual);
@@ -24,10 +25,6 @@ const ConvolutionFilters = ({
     console.log(src, id);
   };
 
-  const channels = [
-    { src: images.ImageR, label: "Red Channel", color: "border-red-400" },
-    { src: images.ImageG, label: "Green Channel", color: "border-green-400" },
-  ];
   const [convVisual, setConvVisual] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -132,34 +129,38 @@ const ConvolutionFilters = ({
       resizeObserver.disconnect();
       window.removeEventListener("resize", drawConnections);
     };
-  }, [images, convolutedImage]);
+  }, [firstLayerImgs, nextLayerImg, convVisual]);
+
   const DEFAULT_KERNEL = [
     [1, 2, 3],
     [1, 2, 3],
     [1, 2, 3],
   ];
+
   return (
     <div
       ref={containerRef}
       className="relative w-full z-50 h-screen flex flex-row 
-      justify-between py-15  items-center  "
+      justify-between items-center px-4 md:px-10 overflow-hidden"
     >
       <svg
         style={{ zIndex: 0 }}
         ref={svgRef}
-        className="absolute  top-0 left-0 w-full h-full pointer-events-none"
+        className="absolute top-0 left-0 w-full h-full pointer-events-none"
       />
 
       <div
-        className={` ${
+        className={`${
           convVisual == true ? "opacity-40" : "opacity-100"
-        } flex gap-8 md:gap-12 justify-center items-center relative
-      flex-col z-10 flex-wrap`}
+        } relative z-10 ${
+          firstLayerImgs.length > 5 ? "grid grid-cols-2" : "flex-col flex gap-4"
+        } gap-4 max-h-screen py-4
+         overflow-hidden`}
       >
-        {channels.map((channel, i) => (
+        {firstLayerImgs.map((channel, i) => (
           <div
             onClick={() => {
-              ConvVisualFunc(channel.src, i);
+              ConvVisualFunc(channel, i);
             }}
             ref={(el) => {
               inputRefs.current[i] = el;
@@ -168,45 +169,44 @@ const ConvolutionFilters = ({
             className="flex cursor-pointer flex-col items-center"
           >
             <div
-              className={`w-20 h-20 rounded-lg shadow-lg border-2 ${channel.color} overflow-hidden bg-gray-50`}
+              className={`w-16 h-16 md:w-20 md:h-20 rounded-lg shadow-lg border-2 overflow-hidden bg-gray-50 transition-transform hover:scale-105`}
             >
-              {channel.src ? (
+              {channel ? (
                 <img
-                  src={channel.src}
-                  alt={channel.label}
+                  src={channel}
+                  alt={"First layer " + i}
                   className="w-full h-full object-cover"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
-                  Loading...
+                  ...
                 </div>
               )}
-            </div>
-            <div className="text-center mt-2 text-sm font-medium text-gray-600">
-              {channel.label}
             </div>
           </div>
         ))}
       </div>
+
       <div
         ref={outputRef}
         className={`${
           convVisual == true ? "opacity-40" : "opacity-100"
-        } mb-16 md:mb-20`}
+        } relative z-10 flex flex-col items-center`}
       >
         <img
-          src={convolutedImage}
-          alt="Uploaded Preview"
-          className="w-48 h-48 md:w-64 md:h-64 object-cover rounded-xl shadow-2xl border-4 border-white"
+          src={nextLayerImg}
+          alt="Output Preview"
+          className="w-32 h-32 md:w-64 md:h-64 object-cover rounded-xl shadow-2xl border-4 border-white"
         />
-        <div className="text-center mt-2 font-semibold text-gray-700">
-          Input Image
+        <div className="text-center mt-2 font-semibold text-gray-700 bg-white/80 px-2 rounded">
+          Next Layer
         </div>
       </div>
+
       {convVisual && (
-        <div className="  absolute z-50 bottom-[25%] left-[40%] ">
-          {" "}
+        <div className="absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-2xl">
           <ConvolutionVisualizer
+            mode={"Relu"}
             ConvVisualHandler={ConvVisualHandler}
             imgSrc="src\components\galcier.jpg"
             resultImgSrc="src\components\galcier.jpg"
@@ -219,31 +219,35 @@ const ConvolutionFilters = ({
   );
 };
 
-export const ConvolutionMap = () => {
-  const convolutedImage = "src/components/galcier.jpg";
-  const images = {
-    ImageR: "src/components/galcier.jpg",
-    ImageG: "src/components/galcier.jpg",
-    ImageB: "src/components/galcier.jpg",
-  };
-  const [modelpopUp, setModelpopUp] = useState<boolean>(false);
-
+export default ConvolutionFilters;
+interface ConvolutionMapProp {
+  modelPopUp: boolean;
+  nextLayerImg: string;
+  firstLayerImgs: string[];
+}
+export const ConvolutionMap = ({
+  modelPopUp,
+  nextLayerImg,
+  firstLayerImgs,
+}: ConvolutionMapProp) => {
+  useEffect(() => {
+    if (modelPopUp) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [modelPopUp, firstLayerImgs, nextLayerImg]);
   return (
-    <div className="   bg-black">
-      <button
-        onClick={() => {
-          setModelpopUp(!modelpopUp);
-        }}
-        className=" bg-amber-300 px-4"
-      >
-        click me
-      </button>
-      {modelpopUp && (
-        <div className=" z-30 w-full h-screen left-0 right-0 top-0 bottom-0  absolute">
-          <div className="h-screen flex items-center justify-center   bg-black/70">
+    <div>
+      {modelPopUp && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="w-full h-full overflow-auto flex items-center justify-center">
             <ConvolutionFilters
-              convolutedImage={convolutedImage}
-              images={images}
+              nextLayerImg={nextLayerImg}
+              firstLayerImgs={firstLayerImgs}
             />
           </div>
         </div>

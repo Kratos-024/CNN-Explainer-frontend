@@ -99,6 +99,7 @@ export const drawConnections = (
 };
 
 const ConvLayerComp = ({
+  setModelpopUpHandler,
   label,
   index,
   animation,
@@ -112,6 +113,7 @@ const ConvLayerComp = ({
   relu,
   ReluLayer,
 }: {
+  setModelpopUpHandler: (src: string[], dest: string) => void;
   label: string;
   index: number;
   animation: boolean;
@@ -204,6 +206,9 @@ const ConvLayerComp = ({
       <div className="flex gap-6 justify-center items-center z-10">
         {images[index].map((image, i) => (
           <div
+            onClick={() => {
+              setModelpopUpHandler(images[images.length - 1], image);
+            }}
             key={i}
             ref={(el) => {
               if (childBoxRefs.current) childBoxRefs.current[i] = el;
@@ -225,6 +230,7 @@ const ConvLayerComp = ({
       <div>
         {relu && RL && (
           <RL
+            setModelpopUpHandler={setModelpopUpHandler}
             animation={animation}
             svgRef={svgRef_}
             parentBoxRefs={convLayerRefs}

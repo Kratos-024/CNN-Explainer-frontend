@@ -51,6 +51,11 @@ const App = () => {
             allLayersData.push(featImages);
           }
         });
+        allLayersData.push([
+          images["ImageR"],
+          images["ImageG"],
+          images["ImageB"],
+        ]);
         setFeatImages(allLayersData);
       }
 
@@ -59,6 +64,19 @@ const App = () => {
 
     sendImage();
   }, [image]);
+  const [modelpopUp, setModelpopUp] = useState<boolean>(false);
+  const [firstLayerImgs, setFirstLayerImgs] = useState<string[]>([]);
+  const [nextLayerImg, setNextLayerImg] = useState<string>("");
+
+  const setModelpopUpHandler = (
+    firstLayerImgs: string[],
+    nextLayerImage: string
+  ) => {
+    setModelpopUp(true);
+    setFirstLayerImgs(firstLayerImgs);
+    setNextLayerImg(nextLayerImage);
+  };
+
   if (loading) {
     return <div>Loading ...</div>;
   }
@@ -124,15 +142,22 @@ const App = () => {
 
         {imagePreview && (
           <VisualizationContainer
+            setModelpopUpHandler={(first: string[], next: string) => {
+              setModelpopUpHandler(first, next);
+            }}
             animation={animation}
             featImages={featImages}
             imagePreview={imagePreview}
             images={images}
           />
         )}
-        <div className="">
-          <ConvolutionMap />
-        </div>
+
+        <ConvolutionMap
+          nextLayerImg={nextLayerImg}
+          firstLayerImgs={firstLayerImgs}
+          modelPopUp={modelpopUp}
+        />
+
         {!imagePreview && (
           <div className="text-gray-500 text-center mt-10">
             <p className="text-lg">

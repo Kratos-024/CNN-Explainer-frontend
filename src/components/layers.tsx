@@ -8,6 +8,7 @@ interface Point {
 }
 
 interface VisualizationContainerProps {
+  setModelpopUpHandler: (src: string[], dest: string) => void;
   animation: boolean;
   featImages: string[][];
   imagePreview: string;
@@ -19,12 +20,12 @@ interface VisualizationContainerProps {
 }
 
 const VisualizationContainer = ({
+  setModelpopUpHandler,
   animation,
   featImages,
   imagePreview,
   images,
 }: VisualizationContainerProps) => {
-  console.log(featImages.length);
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const uploadedImageRef = useRef<HTMLDivElement>(null);
@@ -123,6 +124,9 @@ const VisualizationContainer = ({
       </div>
 
       <RGBLayers
+        setModelpopUpHandler={(first: string[], next: string) => {
+          setModelpopUpHandler(first, next);
+        }}
         animation={animation}
         featImages={featImages}
         images={images}

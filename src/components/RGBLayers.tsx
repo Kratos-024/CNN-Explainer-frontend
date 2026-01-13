@@ -4,6 +4,8 @@ import { ReluLayerComp } from "./ReluLayer";
 import { MaxPoolLayer } from "./MaxPool";
 import { ResultantLayerComp } from "./ResultantLayerComp";
 export interface LayersProps {
+  setModelpopUpHandler: (src: string[], dest: string) => void;
+
   animation: boolean;
   svgRef: React.RefObject<SVGSVGElement | null>;
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
@@ -20,6 +22,7 @@ export interface ResultantLayersProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
 const FirstConvLayer = ({
+  setModelpopUpHandler,
   animation,
   svgRef,
   parentBoxRefs,
@@ -29,6 +32,9 @@ const FirstConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
+      setModelpopUpHandler={(first: string[], next: string) => {
+        setModelpopUpHandler(first, next);
+      }}
       label={"Feature Map"}
       index={0}
       animation={animation}
@@ -72,6 +78,7 @@ const FirstReluLayer = ({
 };
 
 const SecondConvLayer = ({
+  setModelpopUpHandler,
   animation,
   svgRef,
   parentBoxRefs,
@@ -81,6 +88,7 @@ const SecondConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Feature Map"}
       index={2}
       animation={animation}
@@ -150,6 +158,7 @@ const FirstMaxPoolLayer = ({
 };
 
 const ThirdConvLayer = ({
+  setModelpopUpHandler,
   animation,
   svgRef,
   parentBoxRefs,
@@ -159,6 +168,7 @@ const ThirdConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Feature Map"}
       index={5}
       animation={animation}
@@ -201,6 +211,7 @@ const ThirdReluLayer = ({
 };
 
 const FourthConvLayer = ({
+  setModelpopUpHandler,
   animation,
   svgRef,
   parentBoxRefs,
@@ -210,6 +221,7 @@ const FourthConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Feature Map"}
       index={7}
       animation={animation}
@@ -297,6 +309,7 @@ const ResultLayer = ({
   );
 };
 interface RGBLayersProps {
+  setModelpopUpHandler: (src: string[], dest: string) => void;
   animation: boolean;
   featImages: string[][];
   images: {
@@ -307,6 +320,7 @@ interface RGBLayersProps {
   boxRefs: React.RefObject<(HTMLDivElement | null)[]>;
 }
 const RGBLayers = ({
+  setModelpopUpHandler,
   animation,
   featImages,
   images,
@@ -321,12 +335,6 @@ const RGBLayers = ({
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const childBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
-  // const grandChildren = Array(featImages[0].length)
-  //   .fill(null)
-  //   .map((_, i) => ({
-  //     srcImg: featImages[0][i],
-  //     label: `Feature Map ${i + 1}`,
-  //   }));
 
   return (
     <div ref={containerRef} className="relative w-full">
@@ -369,6 +377,9 @@ const RGBLayers = ({
 
       <div>
         <FirstConvLayer
+          setModelpopUpHandler={(first: string[], next: string) => {
+            setModelpopUpHandler(first, next);
+          }}
           animation={animation}
           images={featImages}
           childBoxRefs={childBoxRefs}
