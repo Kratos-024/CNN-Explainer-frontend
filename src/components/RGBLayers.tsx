@@ -36,7 +36,7 @@ const FirstConvLayer = ({
         setModelpopUpHandler(first, next);
       }}
       label={"Feature Map"}
-      index={0}
+      index={1}
       animation={animation}
       images={images}
       childBoxRefs={childBoxRefs}
@@ -52,6 +52,7 @@ const FirstConvLayer = ({
 };
 
 const FirstReluLayer = ({
+  setModelpopUpHandler,
   animation,
   svgRef,
   parentBoxRefs,
@@ -61,8 +62,11 @@ const FirstReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
+      setModelpopUpHandler={(first: string[], next: string) => {
+        setModelpopUpHandler(first, next);
+      }}
       label={"Relu"}
-      index={1}
+      index={2}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -88,9 +92,11 @@ const SecondConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
-      setModelpopUpHandler={setModelpopUpHandler}
+      setModelpopUpHandler={(first: string[], next: string) => {
+        setModelpopUpHandler(first, next);
+      }}
       label={"Feature Map"}
-      index={2}
+      index={3}
       animation={animation}
       path_class_name="secondConv-layer-path"
       circle_class_name="secondConv-layer-circle"
@@ -106,6 +112,7 @@ const SecondConvLayer = ({
 };
 
 const SecondReluLayer = ({
+  setModelpopUpHandler,
   animation,
   svgRef,
   parentBoxRefs,
@@ -115,8 +122,11 @@ const SecondReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
+      setModelpopUpHandler={(first: string[], next: string) => {
+        setModelpopUpHandler(first, next);
+      }}
       label={"Relu"}
-      index={3}
+      index={4}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -132,6 +142,7 @@ const SecondReluLayer = ({
 };
 
 const FirstMaxPoolLayer = ({
+  setModelpopUpHandler,
   animation,
   svgRef,
   parentBoxRefs,
@@ -141,8 +152,11 @@ const FirstMaxPoolLayer = ({
 }: LayersProps) => {
   return (
     <MaxPoolLayer
+      setModelpopUpHandler={(first: string[], next: string) => {
+        setModelpopUpHandler(first, next);
+      }}
       label={"Max Pool"}
-      index={4}
+      index={5}
       animation={animation}
       circle_class_name="max-layer-circle"
       path_class_name="max-layer-path"
@@ -168,9 +182,11 @@ const ThirdConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
-      setModelpopUpHandler={setModelpopUpHandler}
+      setModelpopUpHandler={(first: string[], next: string) => {
+        setModelpopUpHandler(first, next);
+      }}
       label={"Feature Map"}
-      index={5}
+      index={6}
       animation={animation}
       path_class_name="thirdConv-layer-path"
       circle_class_name="thirdConv-layer-circle"
@@ -185,6 +201,7 @@ const ThirdConvLayer = ({
   );
 };
 const ThirdReluLayer = ({
+  setModelpopUpHandler,
   animation,
   svgRef,
   parentBoxRefs,
@@ -194,8 +211,11 @@ const ThirdReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
+      setModelpopUpHandler={(first: string[], next: string) => {
+        setModelpopUpHandler(first, next);
+      }}
       label={"Relu"}
-      index={6}
+      index={7}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -221,9 +241,11 @@ const FourthConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
-      setModelpopUpHandler={setModelpopUpHandler}
+      setModelpopUpHandler={(first: string[], next: string) => {
+        setModelpopUpHandler(first, next);
+      }}
       label={"Feature Map"}
-      index={7}
+      index={8}
       animation={animation}
       path_class_name="thirdConv-layer-path"
       circle_class_name="thirdConv-layer-circle"
@@ -238,6 +260,7 @@ const FourthConvLayer = ({
   );
 };
 const FourthReluLayer = ({
+  setModelpopUpHandler,
   animation,
   svgRef,
   parentBoxRefs,
@@ -247,8 +270,11 @@ const FourthReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
+      setModelpopUpHandler={(first: string[], next: string) => {
+        setModelpopUpHandler(first, next);
+      }}
       label={"Relu"}
-      index={8}
+      index={9}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -263,6 +289,7 @@ const FourthReluLayer = ({
   );
 };
 const SecondMaxPoolLayer = ({
+  setModelpopUpHandler,
   animation,
   svgRef,
   parentBoxRefs,
@@ -272,8 +299,11 @@ const SecondMaxPoolLayer = ({
 }: LayersProps) => {
   return (
     <MaxPoolLayer
+      setModelpopUpHandler={(first: string[], next: string) => {
+        setModelpopUpHandler(first, next);
+      }}
       label={"Max Pool"}
-      index={9}
+      index={10}
       animation={animation}
       circle_class_name="max-layer-circle"
       path_class_name="max-layer-path"
@@ -312,24 +342,23 @@ interface RGBLayersProps {
   setModelpopUpHandler: (src: string[], dest: string) => void;
   animation: boolean;
   featImages: string[][];
-  images: {
-    ImageR: string;
-    ImageG: string;
-    ImageB: string;
-  };
+
   boxRefs: React.RefObject<(HTMLDivElement | null)[]>;
 }
 const RGBLayers = ({
   setModelpopUpHandler,
   animation,
   featImages,
-  images,
   boxRefs,
 }: RGBLayersProps) => {
   const channels = [
-    { src: images.ImageR, label: "Red Channel", color: "border-red-300" },
-    { src: images.ImageG, label: "Green Channel", color: "border-green-300" },
-    { src: images.ImageB, label: "Blue Channel", color: "border-blue-300" },
+    { src: featImages[0][0], label: "Red Channel", color: "border-red-300" },
+    {
+      src: featImages[0][1],
+      label: "Green Channel",
+      color: "border-green-300",
+    },
+    { src: featImages[0][2], label: "Blue Channel", color: "border-blue-300" },
   ];
 
   const svgRef = useRef<SVGSVGElement>(null);

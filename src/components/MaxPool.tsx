@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
-import { drawReluConnections } from "./ReluLayer";
-import type { LayersProps, ResultantLayersProps } from "./RGBLayers";
+import { drawReluConnections, type ReluCompProp } from "./ReluLayer";
 
 const MaxPoolLayer = ({
+  setModelpopUpHandler,
   index,
   label,
   animation,
@@ -16,24 +16,10 @@ const MaxPoolLayer = ({
   nextLayer,
   ThirdConvLayer,
   ResultantLayer,
-}: {
-  index: number;
-  label: string;
-  animation: boolean;
-  childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
-  parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
-  svgRef: React.RefObject<SVGSVGElement | null>;
-  containerRef: React.RefObject<HTMLDivElement | null>;
-  images: string[][];
-  path_class_name: string;
-  circle_class_name: string;
-  nextLayer: boolean;
-  ThirdConvLayer?: React.ComponentType<LayersProps>;
-  ResultantLayer?: React.ComponentType<ResultantLayersProps>;
-}) => {
+}: ReluCompProp) => {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      drawReluConnections(
+    const drawConnect = () => {
+      return drawReluConnections(
         index,
         animation,
         svgRef,
@@ -44,54 +30,19 @@ const MaxPoolLayer = ({
         path_class_name,
         circle_class_name
       );
-    }, 200);
-    const resizeObserver = new ResizeObserver(() =>
-      drawReluConnections(
-        index,
-        animation,
-        svgRef,
-        containerRef,
-        images,
-        parentBoxRefs,
-        childBoxRefs,
-        path_class_name,
-        circle_class_name
-      )
-    );
+    };
+    const timer = setTimeout(drawConnect, 200);
+    const resizeObserver = new ResizeObserver(drawConnect);
 
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
     }
-    window.addEventListener("resize", () => {
-      drawReluConnections(
-        index,
-        animation,
-        svgRef,
-        containerRef,
-        images,
-        parentBoxRefs,
-        childBoxRefs,
-        path_class_name,
-        circle_class_name
-      );
-    });
+    window.addEventListener("resize", drawConnect);
 
     return () => {
       clearTimeout(timer);
       resizeObserver.disconnect();
-      window.removeEventListener("resize", () => {
-        drawReluConnections(
-          index,
-          animation,
-          svgRef,
-          containerRef,
-          images,
-          parentBoxRefs,
-          childBoxRefs,
-          path_class_name,
-          circle_class_name
-        );
-      });
+      window.removeEventListener("resize", drawConnect);
     };
   }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
 
@@ -118,6 +69,9 @@ const MaxPoolLayer = ({
         {images[index].map((image, i) => (
           <div
             key={i}
+            onClick={() => {
+              setModelpopUpHandler(images[index - 1], image);
+            }}
             className="flex flex-col items-center rounded-2xl relative z-10"
           >
             <img
@@ -141,6 +95,7 @@ const MaxPoolLayer = ({
       <div className=" mt-16">
         {nextLayer && NCL && (
           <NCL
+            setModelpopUpHandler={setModelpopUpHandler}
             animation={animation}
             images={images}
             childBoxRefs={nextLayerBoxRefs}

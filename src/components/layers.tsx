@@ -12,11 +12,6 @@ interface VisualizationContainerProps {
   animation: boolean;
   featImages: string[][];
   imagePreview: string;
-  images: {
-    ImageR: string;
-    ImageG: string;
-    ImageB: string;
-  };
 }
 
 const VisualizationContainer = ({
@@ -24,7 +19,6 @@ const VisualizationContainer = ({
   animation,
   featImages,
   imagePreview,
-  images,
 }: VisualizationContainerProps) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -98,7 +92,7 @@ const VisualizationContainer = ({
       resizeObserver.disconnect();
       window.removeEventListener("resize", drawConnections);
     };
-  }, [imagePreview, images]);
+  }, [imagePreview, featImages]);
 
   return (
     <div
@@ -129,7 +123,6 @@ const VisualizationContainer = ({
         }}
         animation={animation}
         featImages={featImages}
-        images={images}
         boxRefs={boxRefs}
       />
     </div>

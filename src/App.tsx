@@ -7,12 +7,9 @@ const App = () => {
   const [image, setImage] = useState<File | null>(null);
   const [featImages, setFeatImages] = useState<string[][]>([[""]]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [images, setImages] = useState<{
-    ImageR: string;
-    ImageG: string;
-    ImageB: string;
-  }>({ ImageR: "", ImageG: "", ImageB: "" });
-  const [animation, setAnimation] = useState<boolean>(false);
+  const allLayersData: SetStateAction<string[][]> = [];
+
+  const [animation, setAnimation] = useState<boolean>(true);
   const [loading, setLoading] = useState(false);
   const animationHandler = () => {
     setAnimation(!animation);
@@ -31,16 +28,15 @@ const App = () => {
       const res = await classifyNdRGB(formData);
       if (res) {
         const { predicted_class, ImageR, ImageG, ImageB } = res;
-        setImages({
-          ImageR: `data:image/png;base64,${ImageR}`,
-          ImageG: `data:image/png;base64,${ImageG}`,
-          ImageB: `data:image/png;base64,${ImageB}`,
-        });
+        allLayersData.push([
+          `data:image/png;base64,${ImageR}`,
+          `data:image/png;base64,${ImageG}`,
+          `data:image/png;base64,${ImageB}`,
+        ]);
       }
       const res2 = await getimgData(formData);
 
       if (res2?.success) {
-        const allLayersData: SetStateAction<string[][]> = [];
         const indices = [0, 2, 5, 7, 8, 10, 12, 13, 15, 17, 18];
         indices.forEach((index) => {
           const layerKey = `layer_${index}`;
@@ -51,11 +47,7 @@ const App = () => {
             allLayersData.push(featImages);
           }
         });
-        allLayersData.push([
-          images["ImageR"],
-          images["ImageG"],
-          images["ImageB"],
-        ]);
+
         setFeatImages(allLayersData);
       }
 
@@ -148,7 +140,6 @@ const App = () => {
             animation={animation}
             featImages={featImages}
             imagePreview={imagePreview}
-            images={images}
           />
         )}
 

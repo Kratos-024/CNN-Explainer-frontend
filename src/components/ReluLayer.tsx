@@ -1,8 +1,27 @@
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 import type { Point } from "./layers";
-import type { LayersProps } from "./RGBLayers";
-
+import type { LayersProps, ResultantLayersProps } from "./RGBLayers";
+export interface ReluCompProp {
+  relu?: boolean;
+  setModelpopUpHandler: (src: string[], dest: string) => void;
+  label: string;
+  index: number;
+  animation: boolean;
+  childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
+  parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
+  svgRef: React.RefObject<SVGSVGElement | null>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
+  images: string[][];
+  path_class_name: string;
+  circle_class_name: string;
+  nextLayer?: boolean;
+  ReluLayer?: React.ComponentType<LayersProps>;
+  NextConvLayer?: React.ComponentType<LayersProps>;
+  NextMaxPoolLayer?: React.ComponentType<LayersProps>;
+  ThirdConvLayer?: React.ComponentType<LayersProps>;
+  ResultantLayer?: React.ComponentType<ResultantLayersProps>;
+}
 export const drawReluConnections = (
   index: number,
   animation: boolean,
@@ -104,6 +123,7 @@ export const drawReluConnections = (
   });
 };
 const ReluLayerComp = ({
+  setModelpopUpHandler,
   label,
   index,
   images,
@@ -117,24 +137,10 @@ const ReluLayerComp = ({
   NextConvLayer,
   NextMaxPoolLayer,
   animation,
-}: {
-  label: string;
-  index: number;
-  animation: boolean;
-  childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
-  parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
-  svgRef: React.RefObject<SVGSVGElement | null>;
-  containerRef: React.RefObject<HTMLDivElement | null>;
-  images: string[][];
-  path_class_name: string;
-  circle_class_name: string;
-  nextLayer: boolean;
-  NextConvLayer?: React.ComponentType<LayersProps>;
-  NextMaxPoolLayer?: React.ComponentType<LayersProps>;
-}) => {
+}: ReluCompProp) => {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      drawReluConnections(
+    const drawConnect = () => {
+      return drawReluConnections(
         index,
         (animation = animation),
         svgRef,
@@ -145,54 +151,19 @@ const ReluLayerComp = ({
         path_class_name,
         circle_class_name
       );
-    }, 200);
-    const resizeObserver = new ResizeObserver(() =>
-      drawReluConnections(
-        index,
-        (animation = animation),
-        svgRef,
-        containerRef,
-        images,
-        parentBoxRefs,
-        childBoxRefs,
-        path_class_name,
-        circle_class_name
-      )
-    );
+    };
+    const timer = setTimeout(drawConnect, 200);
+    const resizeObserver = new ResizeObserver(drawConnect);
 
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current);
     }
-    window.addEventListener("resize", () => {
-      drawReluConnections(
-        index,
-        (animation = animation),
-        svgRef,
-        containerRef,
-        images,
-        parentBoxRefs,
-        childBoxRefs,
-        path_class_name,
-        circle_class_name
-      );
-    });
+    window.addEventListener("resize", drawConnect);
 
     return () => {
       clearTimeout(timer);
       resizeObserver.disconnect();
-      window.removeEventListener("resize", () => {
-        drawReluConnections(
-          index,
-          (animation = animation),
-          svgRef,
-          containerRef,
-          images,
-          parentBoxRefs,
-          childBoxRefs,
-          path_class_name,
-          circle_class_name
-        );
-      });
+      window.removeEventListener("resize", drawConnect);
     };
   }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
 
@@ -216,8 +187,11 @@ const ReluLayerComp = ({
       <div className="flex gap-6 justify-center items-center z-10 flex-wrap">
         {images[index].map((image, i) => (
           <div
+            onClick={() => {
+              setModelpopUpHandler(images[index - 1], image);
+            }}
             key={i}
-            className="flex flex-col items-center rounded-2xl relative z-10"
+            className="flex  cursor-pointer flex-col items-center rounded-2xl relative z-10"
           >
             <img
               ref={(el) => {
@@ -240,6 +214,7 @@ const ReluLayerComp = ({
       <div className=" mt-16">
         {nextLayer && NCL && (
           <NCL
+            setModelpopUpHandler={setModelpopUpHandler}
             animation={animation}
             images={images}
             containerRef={containerRef_}
@@ -250,6 +225,7 @@ const ReluLayerComp = ({
         )}
         {nextLayer && NMPL && (
           <NMPL
+            setModelpopUpHandler={setModelpopUpHandler}
             animation={animation}
             images={images}
             containerRef={containerRef_}

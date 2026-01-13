@@ -74,7 +74,6 @@ const Connector = () => {
     DrawLogic();
     window.addEventListener("resize", DrawLogic);
     return () => {
-      console.log("Cleanup everything");
       window.removeEventListener("resize", DrawLogic);
     };
   }, []);
