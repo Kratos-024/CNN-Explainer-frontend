@@ -3,6 +3,7 @@ import { ConvLayerComp } from "./ConvLayer";
 import { ReluLayerComp } from "./ReluLayer";
 import { MaxPoolLayer } from "./MaxPool";
 import { ResultantLayerComp } from "./ResultantLayerComp";
+import { DropOutLayer } from "./DropoutLayer";
 export interface LayersProps {
   setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
 
@@ -84,11 +85,43 @@ const FirstReluLayer = ({
       images={images}
       svgRef={svgRef}
       nextLayer={true}
+      NextConvLayer={FirstDropoutLayer}
+    />
+  );
+};
+const FirstDropoutLayer = ({
+  setModelpopUpHandler,
+  animation,
+  svgRef,
+  parentBoxRefs,
+  images,
+  childBoxRefs,
+  containerRef,
+}: LayersProps) => {
+  return (
+    <DropOutLayer
+      setModelpopUpHandler={(
+        mode?: string,
+        first?: string[],
+        next?: string
+      ) => {
+        setModelpopUpHandler(mode, first, next);
+      }}
+      label={"Dropout"}
+      index={3}
+      animation={animation}
+      circle_class_name="dropout-layer-circle"
+      path_class_name="dropout-layer-path"
+      containerRef={containerRef}
+      parentBoxRefs={parentBoxRefs}
+      childBoxRefs={childBoxRefs}
+      images={images}
+      svgRef={svgRef}
+      nextLayer={true}
       NextConvLayer={SecondConvLayer}
     />
   );
 };
-
 const SecondConvLayer = ({
   setModelpopUpHandler,
   animation,

@@ -1,5 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import FeatureFlowView from "./FeatureFlowView";
+import { applyDropout } from "../Apis/Image";
+import DropoutFeatureFlowView from "./DropoutFeatureFlowView";
 
 interface LayerExplorationModalProp {
   setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
@@ -16,7 +18,12 @@ export const LayerExplorationModal = ({
   outputFeatureMap,
   inputFeatureMaps,
 }: LayerExplorationModalProp) => {
+  const [dropoutImages, setdropoutImages] = useState<string[]>([""]);
   useEffect(() => {
+    if (mode == "dropout") {
+      console.log("sddfssdfsdfsf");
+      applyDropoutHandler();
+    }
     if (modelPopUp) {
       document.body.style.overflow = "hidden";
     } else {
@@ -26,17 +33,34 @@ export const LayerExplorationModal = ({
       document.body.style.overflow = "auto";
     };
   }, [modelPopUp, inputFeatureMaps, outputFeatureMap]);
+  const applyDropoutHandler = async () => {
+    const response = await applyDropout(inputFeatureMaps);
+    if (response && response.success) {
+      setdropoutImages(
+        response.images.map((img) => `data:image/png;base64,${img}`)
+      );
+    }
+  };
+
   return (
     <div>
       {modelPopUp && (
         <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="w-full h-full overflow-auto flex items-center justify-center">
-            <FeatureFlowView
-              mode={mode}
-              setModelpopUpHandler={setModelpopUpHandler}
-              outputFeatureMap={outputFeatureMap}
-              inputFeatureMaps={inputFeatureMaps}
-            />
+            {mode == "dropout" ? (
+              <DropoutFeatureFlowView
+                dropoutImages={dropoutImages}
+                setModelpopUpHandler={setModelpopUpHandler}
+                inputFeatureMaps={inputFeatureMaps}
+              />
+            ) : (
+              <FeatureFlowView
+                mode={mode}
+                setModelpopUpHandler={setModelpopUpHandler}
+                outputFeatureMap={outputFeatureMap}
+                inputFeatureMaps={inputFeatureMaps}
+              />
+            )}
           </div>
         </div>
       )}
