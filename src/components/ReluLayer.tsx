@@ -4,7 +4,7 @@ import type { Point } from "./layers";
 import type { LayersProps, ResultantLayersProps } from "./RGBLayers";
 export interface ReluCompProp {
   relu?: boolean;
-  setModelpopUpHandler: (src: string[], dest: string) => void;
+  setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
   label: string;
   index: number;
   animation: boolean;
@@ -165,7 +165,7 @@ const ReluLayerComp = ({
       resizeObserver.disconnect();
       window.removeEventListener("resize", drawConnect);
     };
-  }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
+  }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef, animation]);
 
   const svgRef_ = useRef<SVGSVGElement | null>(null);
   const containerRef_ = useRef<HTMLDivElement>(null);
@@ -188,7 +188,7 @@ const ReluLayerComp = ({
         {images[index].map((image, i) => (
           <div
             onClick={() => {
-              setModelpopUpHandler(images[index - 1], image);
+              setModelpopUpHandler("relu", images[index - 1], image);
             }}
             key={i}
             className="flex  cursor-pointer flex-col items-center rounded-2xl relative z-10"

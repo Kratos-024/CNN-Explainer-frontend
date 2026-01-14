@@ -44,7 +44,7 @@ const MaxPoolLayer = ({
       resizeObserver.disconnect();
       window.removeEventListener("resize", drawConnect);
     };
-  }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
+  }, [images, parentBoxRefs, childBoxRefs, svgRef, containerRef, animation]);
 
   const svgRef_ = useRef<SVGSVGElement>(null);
   const containerRef_ = useRef<HTMLDivElement>(null);
@@ -68,7 +68,7 @@ const MaxPoolLayer = ({
           <div
             key={i}
             onClick={() => {
-              setModelpopUpHandler(images[index - 1], image);
+              setModelpopUpHandler("maxpool", images[index - 1], image);
             }}
             className="flex flex-col items-center rounded-2xl relative z-10"
           >

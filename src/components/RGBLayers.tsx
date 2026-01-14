@@ -4,7 +4,7 @@ import { ReluLayerComp } from "./ReluLayer";
 import { MaxPoolLayer } from "./MaxPool";
 import { ResultantLayerComp } from "./ResultantLayerComp";
 export interface LayersProps {
-  setModelpopUpHandler: (src: string[], dest: string) => void;
+  setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
 
   animation: boolean;
   svgRef: React.RefObject<SVGSVGElement | null>;
@@ -32,8 +32,12 @@ const FirstConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
-      setModelpopUpHandler={(first: string[], next: string) => {
-        setModelpopUpHandler(first, next);
+      setModelpopUpHandler={(
+        mode?: string,
+        first?: string[],
+        next?: string
+      ) => {
+        setModelpopUpHandler(mode, first, next);
       }}
       label={"Feature Map"}
       index={2}
@@ -62,8 +66,12 @@ const FirstReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
-      setModelpopUpHandler={(first: string[], next: string) => {
-        setModelpopUpHandler(first, next);
+      setModelpopUpHandler={(
+        mode?: string,
+        first?: string[],
+        next?: string
+      ) => {
+        setModelpopUpHandler(mode, first, next);
       }}
       label={"Relu"}
       index={3}
@@ -92,8 +100,12 @@ const SecondConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
-      setModelpopUpHandler={(first: string[], next: string) => {
-        setModelpopUpHandler(first, next);
+      setModelpopUpHandler={(
+        mode?: string,
+        first?: string[],
+        next?: string
+      ) => {
+        setModelpopUpHandler(mode, first, next);
       }}
       label={"Feature Map"}
       index={4}
@@ -122,8 +134,12 @@ const SecondReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
-      setModelpopUpHandler={(first: string[], next: string) => {
-        setModelpopUpHandler(first, next);
+      setModelpopUpHandler={(
+        mode?: string,
+        first?: string[],
+        next?: string
+      ) => {
+        setModelpopUpHandler(mode, first, next);
       }}
       label={"Relu"}
       index={5}
@@ -152,8 +168,12 @@ const FirstMaxPoolLayer = ({
 }: LayersProps) => {
   return (
     <MaxPoolLayer
-      setModelpopUpHandler={(first: string[], next: string) => {
-        setModelpopUpHandler(first, next);
+      setModelpopUpHandler={(
+        mode?: string,
+        first?: string[],
+        next?: string
+      ) => {
+        setModelpopUpHandler(mode, first, next);
       }}
       label={"Max Pool"}
       index={6}
@@ -182,8 +202,12 @@ const ThirdConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
-      setModelpopUpHandler={(first: string[], next: string) => {
-        setModelpopUpHandler(first, next);
+      setModelpopUpHandler={(
+        mode?: string,
+        first?: string[],
+        next?: string
+      ) => {
+        setModelpopUpHandler(mode, first, next);
       }}
       label={"Feature Map"}
       index={7}
@@ -211,8 +235,12 @@ const ThirdReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
-      setModelpopUpHandler={(first: string[], next: string) => {
-        setModelpopUpHandler(first, next);
+      setModelpopUpHandler={(
+        mode?: string,
+        first?: string[],
+        next?: string
+      ) => {
+        setModelpopUpHandler(mode, first, next);
       }}
       label={"Relu"}
       index={8}
@@ -241,8 +269,12 @@ const FourthConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
-      setModelpopUpHandler={(first: string[], next: string) => {
-        setModelpopUpHandler(first, next);
+      setModelpopUpHandler={(
+        mode?: string,
+        first?: string[],
+        next?: string
+      ) => {
+        setModelpopUpHandler(mode, first, next);
       }}
       label={"Feature Map"}
       index={9}
@@ -270,8 +302,12 @@ const FourthReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
-      setModelpopUpHandler={(first: string[], next: string) => {
-        setModelpopUpHandler(first, next);
+      setModelpopUpHandler={(
+        mode?: string,
+        first?: string[],
+        next?: string
+      ) => {
+        setModelpopUpHandler(mode, first, next);
       }}
       label={"Relu"}
       index={10}
@@ -299,8 +335,12 @@ const SecondMaxPoolLayer = ({
 }: LayersProps) => {
   return (
     <MaxPoolLayer
-      setModelpopUpHandler={(first: string[], next: string) => {
-        setModelpopUpHandler(first, next);
+      setModelpopUpHandler={(
+        mode?: string,
+        first?: string[],
+        next?: string
+      ) => {
+        setModelpopUpHandler(mode, first, next);
       }}
       label={"Max Pool"}
       index={11}
@@ -339,7 +379,7 @@ const ResultLayer = ({
   );
 };
 interface RGBLayersProps {
-  setModelpopUpHandler: (src: string[], dest: string) => void;
+  setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
   animation: boolean;
   featImages: string[][];
 
@@ -406,8 +446,12 @@ const RGBLayers = ({
 
       <div>
         <FirstConvLayer
-          setModelpopUpHandler={(first: string[], next: string) => {
-            setModelpopUpHandler(first, next);
+          setModelpopUpHandler={(
+            mode?: string,
+            first?: string[],
+            next?: string
+          ) => {
+            setModelpopUpHandler(mode, first, next);
           }}
           animation={animation}
           images={featImages}

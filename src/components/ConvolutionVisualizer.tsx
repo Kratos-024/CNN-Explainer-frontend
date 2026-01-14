@@ -1,9 +1,11 @@
+import { max } from "d3";
 import { useEffect, useMemo, useState } from "react";
 import { ImCancelCircle } from "react-icons/im";
 
 interface kernelProp {
   data: number[][];
 }
+
 interface CellDataProp {
   pixelValue: string;
   kernelValue: number;
@@ -16,12 +18,15 @@ interface inputProp {
   resultImgSrc: string;
   autoPlaySpeed: number;
   kernel: kernelProp;
+  onClose: () => void;
 }
+
 interface imageDataProp {
   data: Float32Array | null;
   width: number;
   height: number;
 }
+
 const getPixelValue = (
   data: Float32Array,
   width: number,
@@ -35,17 +40,31 @@ const getPixelValue = (
   const i = (y * width + x) * 4;
   return (data[i] * 0.3 + data[i + 1] * 0.59 + data[i + 2] * 0.11) / 128;
 };
+
 export const ConvolutionVisualizer = ({
   mode,
-
   imgSrc,
   resultImgSrc,
   autoPlaySpeed = 500,
   kernel,
+  onClose,
 }: inputProp) => {
   const [hoverPos, setHoverPos] = useState<{ x: number; y: number }>({
     x: 1,
     y: 1,
+  });
+  const [maxPoolValue, setMaxPoolValue] = useState<{
+    maxValue: string;
+    val1: string;
+    val2: string;
+    val3: string;
+    val4: string;
+  }>({
+    maxValue: "0.00",
+    val1: "0.00",
+    val2: "0.00",
+    val3: "0.00",
+    val4: "0.00",
   });
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
@@ -55,7 +74,6 @@ export const ConvolutionVisualizer = ({
     height: 0,
   });
 
-  // generating random number cuz it easy
   useEffect(() => {
     const width = 632;
     const height = 632;
@@ -68,12 +86,11 @@ export const ConvolutionVisualizer = ({
     setIsLoaded(true);
   }, [imgSrc]);
 
-  // calculating the pos
   useEffect(() => {
     if (!(isLoaded && imgData.width > 0 && !isPaused)) {
       return;
     }
-    setInterval(() => {
+    const interval = setInterval(() => {
       setHoverPos((prev) => {
         const maxX = imgData.width - 2;
         const maxY = imgData.height - 2;
@@ -93,17 +110,19 @@ export const ConvolutionVisualizer = ({
         return { x: nextX, y: nextY };
       });
     }, autoPlaySpeed);
+
+    return () => clearInterval(interval);
   }, [isPaused, isLoaded, imgData, autoPlaySpeed]);
+
   const handleMouseEnter = () => {
     setIsPaused(true);
   };
   const handleMouseLeave = () => {
     setIsPaused(false);
   };
-  // Mouse pos
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const tarRect = e.currentTarget.getBoundingClientRect();
-
     const x = e.clientX - tarRect.left;
     const y = e.clientY - tarRect.top;
 
@@ -117,10 +136,8 @@ export const ConvolutionVisualizer = ({
       setHoverPos({ x: gridX, y: gridY });
     }
   };
+
   const mathGrid = useMemo(() => {
-    if (!isPaused) {
-      setIsPaused(true);
-    }
     if (!imgData.data) {
       return { sum: "0.00", grid: [] };
     }
@@ -149,27 +166,47 @@ export const ConvolutionVisualizer = ({
         });
       }
     }
+    const val1 = grid[0]["pixelValue"];
+    const val2 = grid[1]["pixelValue"];
+    const val3 = grid[2]["pixelValue"];
+    const val4 = grid[3]["pixelValue"];
+    const maxOne = Math.max(
+      Number(val1),
+      Number(val2),
+      Number(val3),
+      Number(val4)
+    );
+    setMaxPoolValue({ maxValue: maxOne.toFixed(2), val1, val2, val3, val4 });
     return { grid, sum: sum.toFixed(2) };
   }, [hoverPos, imgData, kernel]);
+
   const reluInputVal = parseFloat(mathGrid.sum);
   const reluResultVal = Math.max(0, reluInputVal).toFixed(2);
   const isNegative = reluInputVal < 0;
+
   if (!isLoaded || !imgData.data) {
     return <div> Loading convolution ...</div>;
   }
 
   return (
-    <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden mt-10">
-      <div className=" absolute right-5 top-12.75 cursor-pointer">
-        <ImCancelCircle />
+    <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden mt-10 relative">
+      <div
+        className="absolute right-5 top-5 cursor-pointer p-2 hover:bg-gray-100 rounded-full transition-colors z-50"
+        onClick={onClose}
+      >
+        <ImCancelCircle
+          size={24}
+          className="text-gray-500 hover:text-red-500"
+        />
       </div>
-      <div className="p-8 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12">
-        <div className="flex flex-col items-center">
+
+      <div className="p-8 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 overflow-x-auto">
+        <div className="flex flex-col items-center shrink-0">
           <h3 className="text-xl text-gray-600 mb-2">
             Input ({imgData.width}, {imgData.height})
           </h3>
           <div
-            className="relative  cursor-crosshair group"
+            className="relative cursor-crosshair group shrink-0"
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
             onMouseMove={handleMouseMove}
@@ -178,7 +215,7 @@ export const ConvolutionVisualizer = ({
             <img
               src={imgSrc}
               alt="Input"
-              className="w-full h-full object-cover   rendering-pixelated select-none"
+              className="w-full h-full object-cover rendering-pixelated select-none"
               style={{ imageRendering: "pixelated" }}
             />
             {isLoaded && (
@@ -189,9 +226,10 @@ export const ConvolutionVisualizer = ({
                 style={{
                   width: `${(54 / imgData.width) * 100}%`,
                   height: `${(54 / imgData.height) * 100}%`,
-                  left: `${((hoverPos.x - 1) / (imgData.width + 50)) * 100}%`,
-                  top: `${((hoverPos.y - 1) / (imgData.height + 50)) * 100}%`,
+                  left: `${((hoverPos.x - 1) / imgData.width) * 100}%`,
+                  top: `${((hoverPos.y - 1) / imgData.height) * 100}%`,
                   boxShadow: "0 0 0 1px rgba(255, 255, 255, 0.5)",
+                  borderColor: mode === "relu" ? "#ef4444" : "#3b82f6",
                 }}
               >
                 {[...Array(9)].map((_, i) => (
@@ -200,9 +238,10 @@ export const ConvolutionVisualizer = ({
               </div>
             )}
           </div>
-          {mode == "Kernel Mul" && (
-            <div className=" flex flex-col items-center gap-5">
-              <div className="flex flex-col items-center justify-center mt-6 gap-6">
+
+          {mode === "conv" && (
+            <div className="flex flex-col items-center gap-5 mt-4">
+              <div className="flex flex-col items-center justify-center gap-6">
                 <div className="grid grid-cols-3 gap-y-2 gap-x-1">
                   {mathGrid.grid.map((cell, idx) => (
                     <div key={idx} className="flex items-center gap-1 text-xs">
@@ -214,13 +253,12 @@ export const ConvolutionVisualizer = ({
                           × {cell.kernelValue}
                         </div>
                       </div>
-
                       <span className="text-gray-400 font-bold">
                         {(idx + 1) % 3 === 0 ? (idx === 8 ? "=" : "+") : "+"}
                       </span>
                     </div>
                   ))}
-                </div>{" "}
+                </div>
               </div>
               <div className="w-12 h-12 flex items-center justify-center bg-sky-200 border-2 border-sky-400 text-sky-900 font-bold rounded shadow-md text-sm transition-all duration-200 transform scale-100">
                 {mathGrid.sum}
@@ -228,41 +266,93 @@ export const ConvolutionVisualizer = ({
             </div>
           )}
         </div>
-        {mode == "Relu" && (
-          <div>
-            {" "}
-            <div className=" mb-4 text-lg  text-center">ReLU</div>
-            <div className="flex  items-center gap-5">
-              <div className="flex items-center gap-1 text-xs">
-                <span className=" text-xl">Max ( </span>
-                <div className="flex gap-2 items-center">
-                  <div className="w-10 h-10 flex items-center justify-center bg-slate-200 border-2 border-slate-300 rounded text-slate-700 font-semibold shadow-sm transition-colors duration-200">
-                    0
+        <div>
+          {" "}
+          {mode === "relu" && (
+            <div className="shrink-0 flex flex-col items-center">
+              <div className="mb-4 text-lg text-center font-semibold text-gray-700">
+                ReLU Activation
+              </div>
+              <div className="flex items-center gap-5  p-4   ">
+                <div className="flex items-center gap-1 text-xs">
+                  <span className="text-xl font-mono text-gray-500">max(</span>
+                  <div className="flex gap-2 items-center">
+                    <div className="w-10 h-10 flex items-center justify-center bg-slate-200 border-2 border-slate-300 rounded text-slate-700 font-semibold shadow-sm">
+                      0
+                    </div>
+                    <span className="text-2xl text-gray-400">,</span>
+                    <div
+                      className={`w-10 h-10 flex items-center justify-center bg-slate-200 border-2 border-slate-300 rounded font-semibold shadow-sm transition-colors duration-200
+                 ${
+                   isNegative
+                     ? "text-red-600 bg-red-50 border-red-200"
+                     : "text-slate-700"
+                 } `}
+                    >
+                      {reluInputVal}
+                    </div>
                   </div>
-                  <p className=" mt-4">,</p>
-                  <div
-                    className={`w-10 h-10 flex items-center justify-center bg-slate-200 border-2 border-slate-300 rounded  font-semibold shadow-sm transition-colors duration-200
-                 ${isNegative ? "text-red-700" : "text-slate-700"}  `}
-                  >
-                    {reluInputVal}
-                  </div>
+                  <span className="text-xl font-mono text-gray-500">)</span>
                 </div>
-                <span className=" text-xl"> )</span>
-              </div>{" "}
-              <span className=" text-xl"> = </span>
-              <div className="w-12 h-12 flex items-center justify-center bg-sky-200 border-2 border-sky-400 text-sky-900 font-bold rounded shadow-md text-sm transition-all duration-200 transform scale-100">
-                {reluResultVal}
+                <span className="text-xl font-bold text-gray-400">=</span>
+                <div className="w-12 h-12 flex items-center justify-center bg-sky-200 border-2 border-sky-400 text-sky-900 font-bold rounded shadow-md text-sm">
+                  {reluResultVal}
+                </div>
               </div>
             </div>
-          </div>
-        )}
-        <div className="flex flex-col items-center">
+          )}
+          {mode === "maxpool" && (
+            <div className="shrink-0 flex flex-col items-center justify-center">
+              <div className="mb-4 xl:mr-20  md:mr-12 text-lg text-center font-semibold text-gray-700">
+                Max Pooling
+              </div>
+
+              <div className="flex items-center gap-4 p-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl font-mono text-gray-500">max(</span>
+
+                  <div
+                    className="grid grid-cols-2 lg:gap-x-14 
+                   md:gap-x-11 gap-2 items-center"
+                  >
+                    <div className="w-10 h-10 flex items-center justify-center bg-slate-200 border-2 border-slate-300 rounded text-slate-700 font-semibold shadow-sm">
+                      {maxPoolValue.val1}
+                    </div>
+                    <div className="w-10 h-10 flex items-center justify-center bg-slate-200 border-2 border-slate-300 rounded text-slate-700 font-semibold shadow-sm">
+                      {maxPoolValue.val2}
+                    </div>
+                    <div className="w-10 h-10 flex items-center justify-center bg-slate-200 border-2 border-slate-300 rounded text-slate-700 font-semibold shadow-sm">
+                      {maxPoolValue.val3}
+                    </div>
+                    <div className="w-10 h-10 flex items-center justify-center bg-slate-200 border-2 border-slate-300 rounded text-slate-700 font-semibold shadow-sm">
+                      {maxPoolValue.val4}
+                    </div>
+                  </div>
+
+                  <p className="text-xl   md:ml-8 2xl:ml-1 font-mono text-gray-500">
+                    )
+                  </p>
+                </div>
+
+                <span className="text-xl font-bold text-gray-400">=</span>
+
+                <div className="w-12 h-12 flex items-center justify-center bg-sky-200 border-2 border-sky-400 text-sky-900 font-bold rounded shadow-md text-sm">
+                  {maxPoolValue.maxValue}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="flex flex-col items-center shrink-0">
           <h3 className="text-xl text-gray-600 mb-2">
             Output ({imgData.width ? imgData.width - 2 : 28},{" "}
             {imgData.height ? imgData.height - 2 : 28})
           </h3>
 
-          <div className="relative" style={{ width: "240px", height: "240px" }}>
+          <div
+            className="relative shrink-0"
+            style={{ width: "240px", height: "240px" }}
+          >
             <img
               src={resultImgSrc}
               alt="Output"
@@ -278,8 +368,8 @@ export const ConvolutionVisualizer = ({
                 style={{
                   width: `${(18 / (imgData.width - 2)) * 100}%`,
                   height: `${(18 / (imgData.height - 2)) * 100}%`,
-                  left: `${((hoverPos.x - 1) / (imgData.width + 18)) * 100}%`,
-                  top: `${((hoverPos.y - 1) / (imgData.height + 18)) * 100}%`,
+                  left: `${((hoverPos.x - 1) / (imgData.width - 2)) * 100}%`,
+                  top: `${((hoverPos.y - 1) / (imgData.height - 2)) * 100}%`,
                 }}
               />
             )}

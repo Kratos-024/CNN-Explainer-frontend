@@ -2,14 +2,16 @@ import { useEffect, useState } from "react";
 import { classifyNdRGB, getimgData } from "./Apis/Image";
 import { VisualizationContainer } from "./components/layers";
 import { LayerExplorationModal } from "./components/LayerExploration";
+import LoadingOverlay from "./components/LoadingComp";
 
 const App = () => {
   const [image, setImage] = useState<File | null>(null);
   const [CnnData, setCnnData] = useState<string[][]>([[]]);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const allLayersData: string[][] = [];
-  const [animation, setAnimation] = useState<boolean>(true);
+  const [animation, setAnimation] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("Initializing...");
   const animationHandler = () => {
     setAnimation(!animation);
   };
@@ -18,12 +20,15 @@ const App = () => {
 
     const sendImage = async () => {
       setLoading(true);
+      setLoadingMessage("Reading image data...");
       const reader = new FileReader();
+
       reader.onloadend = () => setImagePreview(reader.result as string);
       reader.readAsDataURL(image);
 
       const formData = new FormData();
       formData.append("Img", image);
+      setLoadingMessage("Analyzing RGB Channels & Classifying...");
       const res = await classifyNdRGB(formData);
       if (res) {
         const { softMax_prob, ImageR, ImageG, ImageB } = res;
@@ -34,8 +39,10 @@ const App = () => {
         ]);
         allLayersData.push(softMax_prob);
       }
+      setLoadingMessage("Getting Convolutional Layers");
       const res2 = await getimgData(formData);
       if (res2?.success) {
+        setLoadingMessage("Visualizing Feature Maps");
         const indices = [0, 2, 5, 7, 8, 10, 12, 13, 15, 17, 18];
         indices.forEach((index) => {
           const layerKey = `layer_${index}`;
@@ -58,19 +65,20 @@ const App = () => {
   const [modelpopUp, setModelpopUp] = useState<boolean>(false);
   const [firstLayerImgs, setFirstLayerImgs] = useState<string[]>([]);
   const [nextLayerImg, setNextLayerImg] = useState<string>("");
+  const [Mode, setMode] = useState<string>("");
 
   const setModelpopUpHandler = (
-    firstLayerImgs: string[],
-    nextLayerImage: string
+    mode?: string,
+    firstLayerImgs?: string[],
+    nextLayerImage?: string
   ) => {
-    setModelpopUp(true);
-    setFirstLayerImgs(firstLayerImgs);
-    setNextLayerImg(nextLayerImage);
+    setModelpopUp(!modelpopUp);
+    if (mode && nextLayerImage && firstLayerImgs) {
+      setMode(mode);
+      setFirstLayerImgs(firstLayerImgs);
+      setNextLayerImg(nextLayerImage);
+    }
   };
-
-  if (loading) {
-    return <div>Loading ...</div>;
-  }
 
   return (
     <div className="w-full relative min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
@@ -80,8 +88,15 @@ const App = () => {
         </h1>
       </nav>
 
-      <div className="flex flex-col items-center justify-center mt-10 px-4">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">
+      <div
+        className="flex flex-col items-center justify-center
+       mt-10 px-4"
+      >
+        {loading && <LoadingOverlay message={loadingMessage} />}
+        <h2
+          className="text-2xl font-bold mb-6 text-gray-800 
+        text-center"
+        >
           Upload Image to Visualize CNN Flow
         </h2>
 
@@ -97,29 +112,15 @@ const App = () => {
               className="hidden"
             />
           </label>
-          <label
-            className=" inline-flex items-center 
-           cursor-pointer"
-          >
+          <label className="inline-flex items-center cursor-pointer group">
             <input
-              onClick={animationHandler}
               type="checkbox"
               value=""
               className="sr-only peer"
+              onClick={animationHandler}
             />
-            <div
-              className="relative  bg-blue-600 w-11 h-5 
-         
-       
-        rounded-full  peer peer-checked:after:translate-x-full
-         rtl:peer-checked:after:-translate-x-full
-         peer-checked:after:border-buffer after:content-['']
-          after:absolute after:top-0.5 after:start-1.5 
-           after:bg-white after:rounded-full
-           after:h-4 after:w-4 after:transition-all
-           peer-checked:bg-brand"
-            ></div>
-            <span className="select-none ms-3 text-sm font-medium text-heading">
+            <div className="relative w-11 h-6 bg-gray-200 rounded-full peer-focus:outline-none peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-0.5 after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            <span className="ms-3 text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
               Animation
             </span>
           </label>
@@ -131,10 +132,14 @@ const App = () => {
           </div>
         )}
 
-        {imagePreview && (
+        {imagePreview && !loading && (
           <VisualizationContainer
-            setModelpopUpHandler={(first: string[], next: string) => {
-              setModelpopUpHandler(first, next);
+            setModelpopUpHandler={(
+              mode?: string,
+              first?: string[],
+              next?: string
+            ) => {
+              setModelpopUpHandler(mode, first, next);
             }}
             animation={animation}
             featImages={CnnData}
@@ -143,18 +148,18 @@ const App = () => {
         )}
 
         <LayerExplorationModal
+          mode={Mode}
+          setModelpopUpHandler={(
+            mode?: string,
+            first?: string[],
+            next?: string
+          ) => {
+            setModelpopUpHandler(mode, first, next);
+          }}
           outputFeatureMap={nextLayerImg}
           inputFeatureMaps={firstLayerImgs}
           modelPopUp={modelpopUp}
         />
-
-        {!imagePreview && (
-          <div className="text-gray-500 text-center mt-10">
-            <p className="text-lg">
-              Upload an image to see the CNN visualization
-            </p>
-          </div>
-        )}
       </div>
     </div>
   );

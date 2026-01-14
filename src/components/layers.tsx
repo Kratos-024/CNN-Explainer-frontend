@@ -8,7 +8,7 @@ interface Point {
 }
 
 interface VisualizationContainerProps {
-  setModelpopUpHandler: (src: string[], dest: string) => void;
+  setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
   animation: boolean;
   featImages: string[][];
   imagePreview: string;
@@ -118,8 +118,12 @@ const VisualizationContainer = ({
       </div>
 
       <RGBLayers
-        setModelpopUpHandler={(first: string[], next: string) => {
-          setModelpopUpHandler(first, next);
+        setModelpopUpHandler={(
+          mode?: string,
+          first?: string[],
+          next?: string
+        ) => {
+          setModelpopUpHandler(mode, first, next);
         }}
         animation={animation}
         featImages={featImages}

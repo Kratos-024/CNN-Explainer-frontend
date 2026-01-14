@@ -165,9 +165,9 @@ const ConvLayerComp = ({
         {images[index].map((image, i) => (
           <div
             onClick={() => {
-              index === 1
-                ? setModelpopUpHandler(images[0], image)
-                : setModelpopUpHandler(images[index - 1], image);
+              index === 2
+                ? setModelpopUpHandler("conv", images[0], image)
+                : setModelpopUpHandler("conv", images[index - 1], image);
             }}
             key={i}
             ref={(el) => {
