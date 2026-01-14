@@ -20,21 +20,29 @@ const ResultantLayerComp = ({
   results: string[][];
   path_class_name: string;
 }) => {
+  const classes = [
+    ["glacier", "sea", "street", "forest", "buildings", "mountain"],
+  ];
+  //@ts-ignore
+  let resultProb = results[1].replace(/'/g, "");
+  resultProb = JSON.parse(resultProb);
+  resultProb = resultProb[0].map((num: number) => Number(num.toFixed(2)));
+  resultProb = [resultProb];
+  const index = 0;
+  const drawConnect = () => {
+    return drawConnections(
+      index,
+      animation,
+      svgRef,
+      containerRef,
+      resultProb,
+      parentBoxRefs,
+      childBoxRefs,
+      path_class_name,
+      circle_class_name
+    );
+  };
   useEffect(() => {
-    const index = 1;
-    const drawConnect = () => {
-      return drawConnections(
-        index,
-        animation,
-        svgRef,
-        containerRef,
-        results,
-        parentBoxRefs,
-        childBoxRefs,
-        path_class_name,
-        circle_class_name
-      );
-    };
     const timer = setTimeout(drawConnect, 200);
     const resizeObserver = new ResizeObserver(drawConnect);
 
@@ -48,19 +56,24 @@ const ResultantLayerComp = ({
       resizeObserver.disconnect();
       window.removeEventListener("resize", drawConnect);
     };
-  }, [results, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
+  }, [classes, parentBoxRefs, childBoxRefs, svgRef, containerRef]);
 
   return (
     <div className="relative flex flex-col items-center mt-24 w-full">
-      <div className="flex gap-6 justify-center items-center z-10">
-        {results[0].map((result, i) => (
+      <div className="flex z-50 gap-8 flex-wrap justify-center">
+        {classes[0].map((class_, i) => (
           <div
             key={i}
             ref={(el) => {
-              if (childBoxRefs.current) childBoxRefs.current[i] = el; // Destination of RGB
+              childBoxRefs.current[i] = el;
             }}
           >
-            <span>{result}</span>
+            <p className=" text-black text-[24px] ">
+              {class_.charAt(0).toUpperCase() + class_.slice(1)}
+            </p>
+            <p className=" text-center  text-[11px] opacity-50">
+              {Number(100 * resultProb[0][i].toFixed(2))}%
+            </p>
           </div>
         ))}
       </div>

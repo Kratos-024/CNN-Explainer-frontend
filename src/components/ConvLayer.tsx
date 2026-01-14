@@ -61,17 +61,29 @@ export const drawConnections = (
                             C ${controlPoint1.x},${controlPoint1.y} 
                               ${controlPoint2.x},${controlPoint2.y} 
                               ${target.x},${target.y}`;
-
-      const path = svg
-        .append("path")
-        .attr("class", path_class_name)
-        .attr("d", pathData)
-        .attr("fill", "none")
-        .attr("stroke", "#cbd5e1")
-        .attr("stroke-width", 2)
-        .attr("stroke-dasharray", "3,3")
-        .attr("opacity", 1);
-
+      let path;
+      //@ts-ignore
+      if (index === 0 && _image === Math.max(...images[index])) {
+        path = svg
+          .append("path")
+          .attr("class", path_class_name)
+          .attr("d", pathData)
+          .attr("fill", "none")
+          .attr("stroke", "#00FF00")
+          .attr("stroke-width", 2)
+          .attr("stroke-dasharray", "3,3")
+          .attr("opacity", 1);
+      } else {
+        path = svg
+          .append("path")
+          .attr("class", path_class_name)
+          .attr("d", pathData)
+          .attr("fill", "none")
+          .attr("stroke", "#cbd5e1")
+          .attr("stroke-width", 2)
+          .attr("stroke-dasharray", "3,3")
+          .attr("opacity", 1);
+      }
       const dashCycleLength = 6;
       if (animation) {
         const animateFlow = () => {
