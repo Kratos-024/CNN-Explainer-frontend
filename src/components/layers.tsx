@@ -9,7 +9,13 @@ interface Point {
 
 interface VisualizationContainerProps {
   setInputShape: React.Dispatch<React.SetStateAction<[number, number, number]>>;
-  setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
+  setModelpopUpHandler: (
+    mode?: string,
+    src?: string[],
+    dest?: string,
+    inputShape?: [number, number, number],
+    outputShape?: [number, number, number]
+  ) => void;
   animation: boolean;
   featImages: string[][];
   imagePreview: string;
@@ -26,6 +32,7 @@ const VisualizationContainer = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const uploadedImageRef = useRef<HTMLDivElement>(null);
   const boxRefs = useRef<(HTMLDivElement | null)[]>([]);
+  console.log("Model popup handler set", featImages.length);
 
   useEffect(() => {
     const drawConnections = () => {
@@ -124,9 +131,11 @@ const VisualizationContainer = ({
         setModelpopUpHandler={(
           mode?: string,
           first?: string[],
-          next?: string
+          next?: string,
+          inputShape?: [number, number, number],
+          outputShape?: [number, number, number]
         ) => {
-          setModelpopUpHandler(mode, first, next);
+          setModelpopUpHandler(mode, first, next, inputShape, outputShape);
         }}
         animation={animation}
         featImages={featImages}

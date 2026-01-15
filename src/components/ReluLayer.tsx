@@ -8,7 +8,8 @@ export interface LayerCompProp {
     mode?: string,
     src?: string[],
     dest?: string,
-    input_shape?: [number, number, number]
+    input_shape?: [number, number, number],
+    outputShape?: [number, number, number]
   ) => void;
   label: string;
   index: number;
@@ -100,13 +101,20 @@ const ReluLayerComp = ({
         style={{ zIndex: 0 }}
       />
       <div className=" text-center">
-        Input image shape ({outputHeight},{outputWidth},3)
+        Input image ({outputWidth},{outputWidth},{input_shape[2]}) Output image
+        ({outputWidth},{outputWidth},{input_shape[2]} )
       </div>
       <div className="flex gap-6 justify-center items-center z-10 flex-wrap">
         {images[index].map((image, i) => (
           <div
             onClick={() => {
-              setModelpopUpHandler("relu", images[index - 1], image);
+              setModelpopUpHandler(
+                "relu",
+                images[index - 1],
+                image,
+                input_shape,
+                nextInputShape
+              );
             }}
             key={i}
             className="flex  cursor-pointer flex-col items-center rounded-2xl relative z-10"

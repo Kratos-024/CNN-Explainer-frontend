@@ -154,12 +154,17 @@ const ConvLayerComp = ({
   if (!input_shape || input_shape.length < 3) {
     return null;
   }
-  const outputHeight = Math.floor((input_shape[0] - 3 + 2 * 1) / 2 + 1);
-  const outputWidth = Math.floor((input_shape[1] - 3 + 2 * 1) / 2 + 1);
+  const inputHeight = input_shape[0];
+  const inputWidth = input_shape[1];
+  let inputChannels = input_shape[2];
+  const newChannel = input_shape[2] === 3 ? 10 : input_shape[2] + 10;
+
+  const outputHeight = Math.floor((inputHeight - 3 + 2 * 1) / 2 + 1);
+  const outputWidth = Math.floor((inputWidth - 3 + 2 * 1) / 2 + 1);
   const nextInputShape: [number, number, number] = [
     outputHeight,
     outputWidth,
-    input_shape[2] + 10,
+    newChannel,
   ];
   return (
     <div
@@ -172,19 +177,27 @@ const ConvLayerComp = ({
         style={{ zIndex: 0 }}
       />
       <div className=" text-center">
-        Input image shape1 ({outputHeight},{outputWidth},3)
+        Input image({inputHeight},{inputWidth},{inputChannels}) Output image (
+        {outputHeight},{outputWidth},{newChannel} )
       </div>
       <div className="flex gap-6 justify-center items-center z-10">
         {images[index].map((image, i) => (
           <div
             onClick={() => {
               index === 2
-                ? setModelpopUpHandler("conv", images[0], image, input_shape)
+                ? setModelpopUpHandler(
+                    "conv",
+                    images[0],
+                    image,
+                    input_shape,
+                    nextInputShape
+                  )
                 : setModelpopUpHandler(
                     "conv",
                     images[index - 1],
                     image,
-                    input_shape
+                    input_shape,
+                    nextInputShape
                   );
             }}
             key={i}

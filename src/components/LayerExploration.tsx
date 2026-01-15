@@ -4,12 +4,14 @@ import { applyDropout } from "../Apis/Image";
 import DropoutFeatureFlowView from "./DropoutFeatureFlowView";
 
 interface LayerExplorationModalProp {
+  outputShape: [number, number, number];
   inputShape: [number, number, number];
   setModelpopUpHandler: (
     mode?: string,
     src?: string[],
     dest?: string,
-    input_shape?: [number, number, number]
+    input_shape?: [number, number, number],
+    outputShape?: [number, number, number]
   ) => void;
   mode: string;
   modelPopUp: boolean;
@@ -18,6 +20,7 @@ interface LayerExplorationModalProp {
 }
 
 export const LayerExplorationModal = ({
+  outputShape,
   inputShape,
   mode,
   setModelpopUpHandler,
@@ -28,7 +31,6 @@ export const LayerExplorationModal = ({
   const [dropoutImages, setdropoutImages] = useState<string[]>([""]);
   useEffect(() => {
     if (mode == "dropout") {
-      console.log("sddfssdfsdfsf");
       applyDropoutHandler();
     }
     if (modelPopUp) {
@@ -54,17 +56,20 @@ export const LayerExplorationModal = ({
       {modelPopUp && (
         <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/70 backdrop-blur-sm">
           <div className="w-full h-full overflow-auto flex items-center justify-center">
-            {mode == "dropout" ? (
+            {mode == "dropout" && (
               <DropoutFeatureFlowView
+                outputShape={outputShape}
                 inputShape={inputShape}
                 dropoutImages={dropoutImages}
                 setModelpopUpHandler={setModelpopUpHandler}
                 inputFeatureMaps={inputFeatureMaps}
               />
-            ) : (
+            )}
+            {mode == "conv" && (
               <FeatureFlowView
-                mode={mode}
+                outputShape={outputShape}
                 inputShape={inputShape}
+                mode={mode}
                 setModelpopUpHandler={setModelpopUpHandler}
                 outputFeatureMap={outputFeatureMap}
                 inputFeatureMaps={inputFeatureMaps}

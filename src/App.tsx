@@ -73,11 +73,15 @@ const App = () => {
   const [inputShape, setInputShape] = useState<[number, number, number]>([
     0, 0, 0,
   ]);
+  const [outputShape, setOutputShape] = useState<[number, number, number]>([
+    0, 0, 0,
+  ]);
   const setModelpopUpHandler = (
     mode?: string,
     firstLayerImgs?: string[],
     nextLayerImage?: string,
-    input_shape?: [number, number, number]
+    input_shape?: [number, number, number],
+    outputShape?: [number, number, number]
   ) => {
     setModelpopUp(!modelpopUp);
     if (mode && nextLayerImage && firstLayerImgs) {
@@ -85,6 +89,7 @@ const App = () => {
       setFirstLayerImgs(firstLayerImgs);
       setNextLayerImg(nextLayerImage);
       setInputShape(input_shape || [0, 0, 0]);
+      setOutputShape(outputShape || [0, 0, 0]);
     }
   };
   return (
@@ -145,9 +150,11 @@ const App = () => {
             setModelpopUpHandler={(
               mode?: string,
               first?: string[],
-              next?: string
+              next?: string,
+              inputShape?: [number, number, number],
+              outputShape?: [number, number, number]
             ) => {
-              setModelpopUpHandler(mode, first, next);
+              setModelpopUpHandler(mode, first, next, inputShape, outputShape);
             }}
             animation={animation}
             featImages={CnnData}
@@ -161,10 +168,12 @@ const App = () => {
             mode?: string,
             first?: string[],
             next?: string,
-            inputShape?: [number, number, number]
+            inputShape?: [number, number, number],
+            outputShape?: [number, number, number]
           ) => {
-            setModelpopUpHandler(mode, first, next, inputShape);
+            setModelpopUpHandler(mode, first, next, inputShape, outputShape);
           }}
+          outputShape={outputShape}
           inputShape={inputShape}
           outputFeatureMap={nextLayerImg}
           inputFeatureMaps={firstLayerImgs}

@@ -4,8 +4,15 @@ import { ReluLayerComp } from "./ReluLayer";
 import { MaxPoolLayer } from "./MaxPool";
 import { ResultantLayerComp } from "./ResultantLayerComp";
 import { DropOutLayer } from "./DropoutLayer";
+
 export interface LayersProps {
-  setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
+  setModelpopUpHandler: (
+    mode?: string,
+    src?: string[],
+    dest?: string,
+    inputShape?: [number, number, number],
+    outputShape?: [number, number, number]
+  ) => void;
   input_shape: [number, number, number];
   animation: boolean;
   svgRef: React.RefObject<SVGSVGElement | null>;
@@ -14,6 +21,7 @@ export interface LayersProps {
   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
+
 export interface ResultantLayersProps {
   input_shape: [number, number, number];
   animation: boolean;
@@ -23,6 +31,7 @@ export interface ResultantLayersProps {
   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
+
 const FirstConvLayer = ({
   input_shape,
   setModelpopUpHandler,
@@ -36,15 +45,9 @@ const FirstConvLayer = ({
   return (
     <ConvLayerComp
       input_shape={input_shape}
-      setModelpopUpHandler={(
-        mode?: string,
-        first?: string[],
-        next?: string
-      ) => {
-        setModelpopUpHandler(mode, first, next);
-      }}
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Feature Map"}
-      index={2}
+      index={3}
       animation={animation}
       images={images}
       childBoxRefs={childBoxRefs}
@@ -72,15 +75,9 @@ const FirstReluLayer = ({
   return (
     <ReluLayerComp
       input_shape={input_shape}
-      setModelpopUpHandler={(
-        mode?: string,
-        first?: string[],
-        next?: string
-      ) => {
-        setModelpopUpHandler(mode, first, next);
-      }}
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Relu"}
-      index={3}
+      index={4}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -108,15 +105,9 @@ const FirstDropoutLayer = ({
   return (
     <DropOutLayer
       input_shape={input_shape}
-      setModelpopUpHandler={(
-        mode?: string,
-        first?: string[],
-        next?: string
-      ) => {
-        setModelpopUpHandler(mode, first, next);
-      }}
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Dropout"}
-      index={3}
+      index={5}
       animation={animation}
       circle_class_name="dropout-layer-circle"
       path_class_name="dropout-layer-path"
@@ -130,6 +121,7 @@ const FirstDropoutLayer = ({
     />
   );
 };
+
 const SecondConvLayer = ({
   input_shape,
   setModelpopUpHandler,
@@ -143,15 +135,9 @@ const SecondConvLayer = ({
   return (
     <ConvLayerComp
       input_shape={input_shape}
-      setModelpopUpHandler={(
-        mode?: string,
-        first?: string[],
-        next?: string
-      ) => {
-        setModelpopUpHandler(mode, first, next);
-      }}
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Feature Map"}
-      index={4}
+      index={6}
       animation={animation}
       path_class_name="secondConv-layer-path"
       circle_class_name="secondConv-layer-circle"
@@ -179,15 +165,9 @@ const SecondReluLayer = ({
   return (
     <ReluLayerComp
       input_shape={input_shape}
-      setModelpopUpHandler={(
-        mode?: string,
-        first?: string[],
-        next?: string
-      ) => {
-        setModelpopUpHandler(mode, first, next);
-      }}
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Relu"}
-      index={5}
+      index={7}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -215,15 +195,9 @@ const FirstMaxPoolLayer = ({
   return (
     <MaxPoolLayer
       input_shape={input_shape}
-      setModelpopUpHandler={(
-        mode?: string,
-        first?: string[],
-        next?: string
-      ) => {
-        setModelpopUpHandler(mode, first, next);
-      }}
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Max Pool"}
-      index={6}
+      index={8}
       animation={animation}
       circle_class_name="max-layer-circle"
       path_class_name="max-layer-path"
@@ -251,15 +225,9 @@ const ThirdConvLayer = ({
   return (
     <ConvLayerComp
       input_shape={input_shape}
-      setModelpopUpHandler={(
-        mode?: string,
-        first?: string[],
-        next?: string
-      ) => {
-        setModelpopUpHandler(mode, first, next);
-      }}
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Feature Map"}
-      index={7}
+      index={9}
       animation={animation}
       path_class_name="thirdConv-layer-path"
       circle_class_name="thirdConv-layer-circle"
@@ -287,18 +255,41 @@ const ThirdReluLayer = ({
   return (
     <ReluLayerComp
       input_shape={input_shape}
-      setModelpopUpHandler={(
-        mode?: string,
-        first?: string[],
-        next?: string
-      ) => {
-        setModelpopUpHandler(mode, first, next);
-      }}
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Relu"}
-      index={8}
+      index={10}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
+      containerRef={containerRef}
+      parentBoxRefs={parentBoxRefs}
+      childBoxRefs={childBoxRefs}
+      images={images}
+      svgRef={svgRef}
+      nextLayer={true}
+      NextConvLayer={SecondDropoutLayer}
+    />
+  );
+};
+const SecondDropoutLayer = ({
+  input_shape,
+  setModelpopUpHandler,
+  animation,
+  svgRef,
+  parentBoxRefs,
+  images,
+  childBoxRefs,
+  containerRef,
+}: LayersProps) => {
+  return (
+    <DropOutLayer
+      input_shape={input_shape}
+      setModelpopUpHandler={setModelpopUpHandler}
+      label={"Dropout"}
+      index={5}
+      animation={animation}
+      circle_class_name="dropout-layer-circle"
+      path_class_name="dropout-layer-path"
       containerRef={containerRef}
       parentBoxRefs={parentBoxRefs}
       childBoxRefs={childBoxRefs}
@@ -309,7 +300,6 @@ const ThirdReluLayer = ({
     />
   );
 };
-
 const FourthConvLayer = ({
   input_shape,
   setModelpopUpHandler,
@@ -323,15 +313,9 @@ const FourthConvLayer = ({
   return (
     <ConvLayerComp
       input_shape={input_shape}
-      setModelpopUpHandler={(
-        mode?: string,
-        first?: string[],
-        next?: string
-      ) => {
-        setModelpopUpHandler(mode, first, next);
-      }}
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Feature Map"}
-      index={9}
+      index={11}
       animation={animation}
       path_class_name="thirdConv-layer-path"
       circle_class_name="thirdConv-layer-circle"
@@ -345,6 +329,7 @@ const FourthConvLayer = ({
     />
   );
 };
+
 const FourthReluLayer = ({
   input_shape,
   setModelpopUpHandler,
@@ -358,15 +343,9 @@ const FourthReluLayer = ({
   return (
     <ReluLayerComp
       input_shape={input_shape}
-      setModelpopUpHandler={(
-        mode?: string,
-        first?: string[],
-        next?: string
-      ) => {
-        setModelpopUpHandler(mode, first, next);
-      }}
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Relu"}
-      index={10}
+      index={12}
       animation={animation}
       circle_class_name="relu-layer-circle"
       path_class_name="relu-layer-path"
@@ -380,6 +359,7 @@ const FourthReluLayer = ({
     />
   );
 };
+
 const SecondMaxPoolLayer = ({
   input_shape,
   setModelpopUpHandler,
@@ -393,15 +373,9 @@ const SecondMaxPoolLayer = ({
   return (
     <MaxPoolLayer
       input_shape={input_shape}
-      setModelpopUpHandler={(
-        mode?: string,
-        first?: string[],
-        next?: string
-      ) => {
-        setModelpopUpHandler(mode, first, next);
-      }}
+      setModelpopUpHandler={setModelpopUpHandler}
       label={"Max Pool"}
-      index={11}
+      index={12}
       animation={animation}
       circle_class_name="max-layer-circle"
       path_class_name="max-layer-path"
@@ -439,14 +413,21 @@ const ResultLayer = ({
     />
   );
 };
+
 interface RGBLayersProps {
   setInputShape: React.Dispatch<React.SetStateAction<[number, number, number]>>;
-  setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
+  setModelpopUpHandler: (
+    mode?: string,
+    src?: string[],
+    dest?: string,
+    inputShape?: [number, number, number],
+    outputShape?: [number, number, number]
+  ) => void;
   animation: boolean;
   featImages: string[][];
-
   boxRefs: React.RefObject<(HTMLDivElement | null)[]>;
 }
+
 const RGBLayers = ({
   setModelpopUpHandler,
   animation,
@@ -454,13 +435,21 @@ const RGBLayers = ({
   boxRefs,
 }: RGBLayersProps) => {
   const channels = [
-    { src: featImages[0][0], label: "Red Channel", color: "border-red-300" },
     {
-      src: featImages[0][1],
+      src: featImages?.[0]?.[0] || "",
+      label: "Red Channel",
+      color: "border-red-300",
+    },
+    {
+      src: featImages?.[0]?.[1] || "",
       label: "Green Channel",
       color: "border-green-300",
     },
-    { src: featImages[0][2], label: "Blue Channel", color: "border-blue-300" },
+    {
+      src: featImages?.[0]?.[2] || "",
+      label: "Blue Channel",
+      color: "border-blue-300",
+    },
   ];
 
   const svgRef = useRef<SVGSVGElement>(null);
@@ -469,6 +458,7 @@ const RGBLayers = ({
   const width = 224;
   const height = 224;
   const channels_num = 3;
+
   return (
     <div ref={containerRef} className="relative w-full">
       <svg
@@ -476,20 +466,22 @@ const RGBLayers = ({
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
         style={{ zIndex: 1 }}
       />
-      <div className=" text-center">Input image shape (224,224,3)</div>
+      <div className="text-center">Input image shape (224,224,3)</div>
       <div className="flex gap-8 md:gap-12 justify-center items-center relative z-10 flex-wrap">
         {channels.map((channel, i) => (
           <div
             key={i}
             ref={(el) => {
-              boxRefs.current[i] = el;
+              if (boxRefs.current) {
+                boxRefs.current[i] = el;
+              }
             }}
             className="flex flex-col items-center"
           >
             <div
               className={`w-48 h-48 rounded-lg shadow-lg border-2 ${channel.color} overflow-hidden bg-gray-50`}
             >
-              {channel.src && typeof channel.src === "string" ? (
+              {channel.src ? (
                 <img
                   src={channel.src}
                   alt={channel.label}
@@ -511,13 +503,7 @@ const RGBLayers = ({
       <div>
         <FirstConvLayer
           input_shape={[height, width, channels_num]}
-          setModelpopUpHandler={(
-            mode?: string,
-            first?: string[],
-            next?: string
-          ) => {
-            setModelpopUpHandler(mode, first, next);
-          }}
+          setModelpopUpHandler={setModelpopUpHandler}
           animation={animation}
           images={featImages}
           childBoxRefs={childBoxRefs}

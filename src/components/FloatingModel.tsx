@@ -5,102 +5,102 @@ const InfoArr = [
   {
     title: "Convolutional Neural Network (CNN)",
     description:
-      "A type of machine learning classifier algorithm that excels at recognizing patterns in data, particularly for image classification tasks like identifying objects within an image.",
+      "A specialized deep learning architecture designed to process grid-like data, such as images. It mimics how the human visual cortex detects features like edges and textures.",
   },
   {
-    title: "Neuron",
+    title: "Input Layer (RGB Channels)",
     description:
-      "A basic unit of a neural network that functions as a mathematical operation, taking in multiple inputs and yielding a single output.",
+      "The entry point of the network. You see this as the three colored blocks (Red, Green, Blue) at the start. Each block represents the intensity of that specific color across the image pixels.",
   },
   {
     title: "Tensor",
     description:
-      "An n-dimensional matrix. In the context of the CNN described, most tensors are 3-dimensional, with the exception of the output layer.",
+      "The fundamental data block you see moving through the network. While a standard image is 2D, deep learning treats it as a 3D block (Height × Width × Color Channels) of numerical values.",
   },
   {
-    title: "Layer",
+    title: "Pixel Intensity",
     description:
-      "A collection of neurons that all perform the same operation and share the same hyperparameters.",
-  },
-  {
-    title: "Kernel Weights & Biases",
-    description:
-      "Values tuned during the training phase that allow the classifier to adapt to the dataset. They are often visualized with diverging color scales.",
-  },
-  {
-    title: "Input Layer",
-    description:
-      "The leftmost layer representing the image data entered into the CNN. For RGB images, this layer consists of three channels: red, green, and blue.",
-  },
-  {
-    title: "Convolutional Layer",
-    description:
-      "The foundational layer of a CNN containing learned kernels that extract distinguishing features from images.",
+      "The raw numbers inside the Input Layer tensors. These usually range from 0 (black) to 255 (white), representing how bright the pixel is at that specific location.",
   },
   {
     title: "Convolution Operation",
     description:
-      "An elementwise dot product performed between a unique kernel and the output of the previous layer's neuron, summed with a learned bias.",
+      "The core mathematical process. A small filter slides over the input image, multiplying pixel values and summing them up to create a single new pixel in the next layer.",
   },
   {
-    title: "Padding",
+    title: "Kernel (Filter)",
     description:
-      "A hyperparameter technique (often zero-padding) that conserves data at the borders of activation maps and helps preserve the input's spatial size.",
+      "The small 'window' that slides across the image during convolution. Each kernel is trained to look for a specific shape, such as a vertical line, a curve, or a corner.",
   },
   {
-    title: "Kernel Size",
+    title: "Feature Map",
     description:
-      "The dimensions of the sliding window over the input (e.g., 3x3). Smaller kernels can extract more local features and allow for deeper architectures.",
+      "The gray boxes you see after a convolution. These are not the original image anymore; they are 'maps' highlighting where specific features (found by the Kernels) exist in the image.",
   },
   {
     title: "Stride",
     description:
-      "A hyperparameter indicating how many pixels the kernel shifts at a time. Lower stride extracts more data, while higher stride leads to smaller output dimensions.",
+      "The distance the Kernel moves at each step. A larger stride means the filter skips pixels, which results in a smaller Feature Map output.",
+  },
+  {
+    title: "Padding",
+    description:
+      "A technique of adding a border of 'zero' value pixels around the image. This allows the Kernel to process the edges of the image properly so the output size doesn't shrink too fast.",
+  },
+  {
+    title: "Bias",
+    description:
+      "A learnable constant added to the result of the convolution. It allows the model to shift the activation function left or right, giving it flexibility to fit the data better.",
+  },
+  {
+    title: "Activation Function",
+    description:
+      "A mathematical gate that decides if a neuron should 'fire' or not. Without this, the entire neural network would just be one big linear regression model.",
   },
   {
     title: "ReLU (Rectified Linear Unit)",
     description:
-      "An activation function that introduces non-linearity by disregarding all negative data (outputting zero for negative inputs) and keeping positive values unchanged.",
+      "represented by the layer with the **Red Dashed Box**. It is a filter that forces all negative values to become zero, introducing necessary non-linearity into the model.",
   },
   {
-    title: "Importance of Non-linearity",
+    title: "Why ReLU Matters",
     description:
-      "Without non-linear functions like ReLU, deep CNN architectures would mathematically devolve into a single linear layer, significantly reducing their performance.",
+      "By removing negative values (blacking them out), ReLU helps the network focus only on the positive 'matches' found by the convolution, ignoring the irrelevant background noise.",
   },
   {
-    title: "Softmax",
+    title: "Dropout",
     description:
-      "A function used in the output layer that scales model outputs (logits) so they sum to 1, effectively converting them into probabilities.",
+      "Represented by the **dashed lines** and fading connections. This technique randomly turns off neurons during training to force the network to become more robust and not rely on any single path.",
   },
   {
-    title: "Softmax vs. Standard Normalization",
+    title: "Regularization",
     description:
-      "Unlike standard rescaling, Softmax acts as a 'soft argmax,' weighing the maximum value significantly higher than others to provide a clearer signal for backpropagation.",
+      "The concept behind Dropout. It prevents 'overfitting'—where the model memorizes the training images instead of actually learning to recognize general patterns.",
   },
   {
-    title: "Pooling Layers",
+    title: "Pooling Layer",
     description:
-      "Layers designed to gradually decrease the spatial extent of the network, thereby reducing parameters and overall computation.",
+      "A down-sampling operation. This reduces the height and width of the tensors to reduce computation power and control overfitting.",
   },
   {
-    title: "Max-Pooling",
+    title: "Max Pooling",
     description:
-      "A specific pooling operation that slides a kernel over the input and selects only the largest value at each slice, discarding other data to improve efficiency and avoid overfitting.",
+      "The specific pooling method used here. It looks at a small patch (e.g., 2x2) and keeps only the highest number (the strongest feature), discarding the rest.",
   },
   {
-    title: "Flatten Layer",
+    title: "Translation Invariance",
     description:
-      "A layer that converts a multi-dimensional tensor (e.g., 3D) into a 1-dimensional vector to fit the input requirements of a fully-connected classification layer.",
+      "A benefit gained from Pooling. It ensures that the network recognizes a 'cat' whether the cat is in the top-left corner or the bottom-right corner of the image.",
   },
   {
-    title: "Tiny VGG",
+    title: "Fully Connected Layer",
     description:
-      "The specific network architecture used in CNN Explainer. It mimics state-of-the-art CNNs but on a smaller scale to make learning easier.",
+      "Often found at the end of the network. After extracting all the spatial features, this layer connects every single neuron to every neuron in the next layer to make the final classification decision.",
   },
   {
-    title: "CNN Explainer Technology",
+    title: "Tiny VGG Architecture",
     description:
-      "The interactive visualization tool described is built using TensorFlow.js for in-browser GPU acceleration, Svelte as the framework, and D3.js for visualizations.",
+      "The specific blueprint of this network. It uses a repeated pattern of 'Convolution -> ReLU -> Pooling', which is a classic and highly effective structure for deep learning vision tasks.",
   },
 ];
 const FloatingModal = ({

@@ -54,6 +54,9 @@ const MaxPoolLayer = ({
   const localBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const NCL = ThirdConvLayer;
   const ResultL = ResultantLayer;
+  const inputHeight = input_shape[0];
+  const inputWidth = input_shape[1];
+  const inputChannels = input_shape[2];
   const outputHeight = Math.floor((input_shape[0] - 2 + 2 * 0) / 2 + 1);
   const outputWidth = Math.floor((input_shape[1] - 2 + 2 * 0) / 2 + 1);
   const nextInputShape: [number, number, number] = [
@@ -73,14 +76,21 @@ const MaxPoolLayer = ({
         style={{ zIndex: 0 }}
       />{" "}
       <div className=" text-center">
-        Input image shape1 ({outputHeight},{outputWidth},3)
+        Input image ({inputHeight},{inputWidth},{inputChannels}) Output image (
+        {outputHeight},{outputWidth},{nextInputShape[2]} )
       </div>
       <div className="flex gap-6 justify-center items-center z-10 flex-wrap">
         {images[index].map((image, i) => (
           <div
             key={i}
             onClick={() => {
-              setModelpopUpHandler("maxpool", images[index - 1], image);
+              setModelpopUpHandler(
+                "maxpool",
+                images[index - 1],
+                image,
+                input_shape,
+                nextInputShape
+              );
             }}
             className="flex flex-col items-center rounded-2xl relative z-10"
           >

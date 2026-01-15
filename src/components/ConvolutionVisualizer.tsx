@@ -12,6 +12,7 @@ interface CellDataProp {
 }
 
 interface inputProp {
+  outputShape: [number, number, number];
   inputShape: [number, number, number];
   mode: string;
   imgSrc: string;
@@ -42,6 +43,7 @@ const getPixelValue = (
 };
 
 export const ConvolutionVisualizer = ({
+  outputShape,
   inputShape,
   mode,
   imgSrc,
@@ -50,19 +52,16 @@ export const ConvolutionVisualizer = ({
   kernel,
   onClose,
 }: inputProp) => {
-  const [outputShape, setOutputShape] = useState<[number, number, number]>([
-    0, 0, 0,
-  ]);
-  const poolSize = 2;
-  const stride = 2;
-  if (mode === "maxpool") {
-    const [h, w, c] = inputShape;
+  // const poolSize = 2;
+  // const stride = 2;
+  // if (mode === "maxpool") {
+  //   const [h, w, c] = inputShape;
 
-    const hOut = Math.floor((h - poolSize) / stride) + 1;
-    const wOut = Math.floor((w - poolSize) / stride) + 1;
+  //   const hOut = Math.floor((h - poolSize) / stride) + 1;
+  //   const wOut = Math.floor((w - poolSize) / stride) + 1;
 
-    setOutputShape([hOut, wOut, c]);
-  }
+  //   setOutputShape([hOut, wOut, c]);
+  // }
 
   const [hoverPos, setHoverPos] = useState<{ x: number; y: number }>({
     x: 1,
@@ -218,7 +217,7 @@ export const ConvolutionVisualizer = ({
       <div className="p-8 flex flex-col md:flex-row items-center justify-center gap-8 md:gap-12 overflow-x-auto">
         <div className="flex flex-col items-center shrink-0">
           <h3 className="text-xl text-gray-600 mb-2">
-            Input ({imgData.width}, {imgData.height})
+            Input ({inputShape[0]}, {inputShape[1]})
           </h3>
           <div
             className="relative cursor-crosshair group shrink-0"

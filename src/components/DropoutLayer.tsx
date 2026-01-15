@@ -170,7 +170,8 @@ const DropOutLayer = ({
         style={{ zIndex: 0 }}
       />
       <div className=" text-center">
-        Input image shape1 ({outputHeight},{outputWidth},3)
+        Input image ({outputWidth},{outputWidth},{input_shape[2]}) Output image
+        ({outputWidth},{outputWidth},{input_shape[2]} )
       </div>
       <div className="flex gap-6 justify-center items-center z-10 flex-wrap">
         <div
@@ -178,7 +179,9 @@ const DropOutLayer = ({
             setModelpopUpHandler(
               "dropout",
               images[index - 1],
-              images[index][1]
+              images[index][1],
+              input_shape,
+              nextInputShape
             );
           }}
           className="flex  cursor-pointer flex-col items-center rounded-2xl relative z-10"
@@ -201,7 +204,7 @@ const DropOutLayer = ({
       <div className=" mt-16">
         {nextLayer && NCL && (
           <NCL
-            input_shape={input_shape}
+            input_shape={nextInputShape}
             setModelpopUpHandler={setModelpopUpHandler}
             animation={animation}
             images={images}
@@ -213,7 +216,7 @@ const DropOutLayer = ({
         )}
         {nextLayer && NMPL && (
           <NMPL
-            input_shape={input_shape}
+            input_shape={nextInputShape}
             setModelpopUpHandler={setModelpopUpHandler}
             animation={animation}
             images={images}

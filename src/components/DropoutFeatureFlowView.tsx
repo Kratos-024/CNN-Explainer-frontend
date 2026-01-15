@@ -4,6 +4,7 @@ import { ImCancelCircle } from "react-icons/im";
 import type { Point } from "./layers";
 
 interface DropoutFeatureFlowViewProp {
+  outputShape: [number, number, number];
   inputShape: [number, number, number];
   dropoutImages: string[];
   setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
@@ -11,8 +12,9 @@ interface DropoutFeatureFlowViewProp {
 }
 
 const DropoutFeatureFlowView = ({
+  inputShape,
   dropoutImages,
-
+  outputShape,
   setModelpopUpHandler,
   inputFeatureMaps,
 }: DropoutFeatureFlowViewProp) => {
@@ -124,6 +126,11 @@ const DropoutFeatureFlowView = ({
       className="relative w-full z-50 h-[50vh]  flex flex-col
       justify-between items-center px-4 md:px-10 "
     >
+      <div className=" text-white absolute -top-9">
+        Input shape ({inputShape[0]}, {inputShape[1]}) Output shape (
+        {outputShape[0]}, {outputShape[1]})
+      </div>
+
       <svg
         style={{ zIndex: 0 }}
         ref={svgRef}

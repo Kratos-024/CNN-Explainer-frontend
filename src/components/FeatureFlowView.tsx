@@ -4,6 +4,7 @@ import { ImCancelCircle } from "react-icons/im";
 import { ConvolutionVisualizer } from "./ConvolutionVisualizer";
 import type { Point } from "./layers";
 interface ConvolutionFiltersProp {
+  outputShape: [number, number, number];
   inputShape: [number, number, number];
   mode: string;
   setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
@@ -11,6 +12,7 @@ interface ConvolutionFiltersProp {
   inputFeatureMaps: string[];
 }
 const FeatureFlowView = ({
+  outputShape,
   inputShape,
   mode,
   setModelpopUpHandler,
@@ -130,17 +132,23 @@ const FeatureFlowView = ({
     };
   }, [inputFeatureMaps, outputFeatureMap, showMathDetail]);
 
-  const DEFAULT_KERNEL = [
-    [1, 2, 3],
-    [1, 2, 3],
-    [1, 2, 3],
-  ];
+  function generateRandomFloatKernel(rows = 3, cols = 3, min = -1, max = 1) {
+    return Array.from({ length: rows }, () =>
+      Array.from({ length: cols }, () =>
+        Number((Math.random() * (max - min) + min).toFixed(2))
+      )
+    );
+  }
+
+  const DEFAULT_KERNEL = generateRandomFloatKernel();
+
   return (
     <div
       ref={containerRef}
       className="relative w-full z-50 h-screen flex flex-row 
       justify-between items-center px-4 md:px-10 overflow-hidden"
     >
+      {" "}
       <svg
         style={{ zIndex: 0 }}
         ref={svgRef}
@@ -191,7 +199,6 @@ const FeatureFlowView = ({
           </div>
         ))}
       </div>
-
       <div
         ref={outputRef}
         className={`${
@@ -207,10 +214,10 @@ const FeatureFlowView = ({
           Next Layer
         </div>
       </div>
-
       {showMathDetail && (
         <div className="absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-2xl">
           <ConvolutionVisualizer
+            outputShape={outputShape}
             inputShape={inputShape}
             onClose={showMathDetailHandler}
             mode={mode}
