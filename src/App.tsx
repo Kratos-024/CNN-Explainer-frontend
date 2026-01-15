@@ -3,6 +3,7 @@ import { classifyNdRGB, getimgData } from "./Apis/Image";
 import { VisualizationContainer } from "./components/layers";
 import { LayerExplorationModal } from "./components/LayerExploration";
 import LoadingOverlay from "./components/LoadingComp";
+import FloatingModal from "./components/FloatingModel";
 
 const App = () => {
   const [image, setImage] = useState<File | null>(null);
@@ -66,6 +67,7 @@ const App = () => {
   const [firstLayerImgs, setFirstLayerImgs] = useState<string[]>([]);
   const [nextLayerImg, setNextLayerImg] = useState<string>("");
   const [Mode, setMode] = useState<string>("");
+  const [floatingModel, setFloatingModel] = useState<boolean>(true);
 
   const setModelpopUpHandler = (
     mode?: string,
@@ -79,7 +81,6 @@ const App = () => {
       setNextLayerImg(nextLayerImage);
     }
   };
-
   return (
     <div className="w-full relative min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
       <nav className="bg-white shadow-md py-4 px-6">
@@ -161,6 +162,7 @@ const App = () => {
           modelPopUp={modelpopUp}
         />
       </div>
+      {floatingModel && <FloatingModal setFloatingModal={setFloatingModel} />}
     </div>
   );
 };

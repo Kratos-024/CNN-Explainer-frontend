@@ -150,7 +150,6 @@ const ConvLayerComp = ({
   const convLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const reluLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const RL = ReluLayer;
-
   return (
     <div
       ref={containerRef_}
