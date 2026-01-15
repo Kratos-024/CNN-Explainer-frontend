@@ -1,4 +1,4 @@
-const api_uri = "https://cnn-explainer-backend.onrender.com";
+const api_uri = "https://2fad28ac305c.ngrok-free.app";
 
 interface ImageResponse {
   message: string;
