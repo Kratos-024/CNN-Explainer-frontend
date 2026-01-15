@@ -54,8 +54,8 @@ const MaxPoolLayer = ({
   const localBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const NCL = ThirdConvLayer;
   const ResultL = ResultantLayer;
-  const outputWidth = Math.floor((input_shape[1] - 2 + 2 * 0) / 2 + 1);
   const outputHeight = Math.floor((input_shape[0] - 2 + 2 * 0) / 2 + 1);
+  const outputWidth = Math.floor((input_shape[1] - 2 + 2 * 0) / 2 + 1);
   const nextInputShape: [number, number, number] = [
     outputHeight,
     outputWidth,

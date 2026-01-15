@@ -154,8 +154,8 @@ const ConvLayerComp = ({
   if (!input_shape || input_shape.length < 3) {
     return null;
   }
-  const outputWidth = Math.floor((input_shape[1] - 3 + 2 * 2) / 1 + 1);
-  const outputHeight = Math.floor((input_shape[0] - 3 + 2 * 2) / 1 + 1);
+  const outputHeight = Math.floor((input_shape[0] - 3 + 2 * 1) / 2 + 1);
+  const outputWidth = Math.floor((input_shape[1] - 3 + 2 * 1) / 2 + 1);
   const nextInputShape: [number, number, number] = [
     outputHeight,
     outputWidth,
