@@ -17,7 +17,7 @@ const FeatureFlowView = ({
 }: ConvolutionFiltersProp) => {
   const [channel, setChannel] = useState<string>("");
 
-  const showMathDetailHandler = (src?: string, id?: number) => {
+  const showMathDetailHandler = (src?: string, _id?: number) => {
     setShowMathDetail(!showMathDetail);
     if (src) setChannel(src);
   };

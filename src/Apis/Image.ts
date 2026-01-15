@@ -1,5 +1,3 @@
-import { json } from "d3";
-
 const api_uri = "http://127.0.0.1:8000";
 
 interface ImageResponse {

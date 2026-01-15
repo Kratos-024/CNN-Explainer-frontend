@@ -1,4 +1,3 @@
-import { max } from "d3";
 import { useEffect, useMemo, useState } from "react";
 import { ImCancelCircle } from "react-icons/im";
 

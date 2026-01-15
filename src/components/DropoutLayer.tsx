@@ -102,7 +102,7 @@ export const drawDropoutConnections = (
 
 const DropOutLayer = ({
   setModelpopUpHandler,
-  label,
+
   index,
   images,
   childBoxRefs,
