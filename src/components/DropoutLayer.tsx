@@ -101,8 +101,6 @@ export const drawDropoutConnections = (
 };
 
 const DropOutLayer = ({
-  setInputShape,
-
   setModelpopUpHandler,
   input_shape,
   index,
@@ -155,7 +153,11 @@ const DropOutLayer = ({
   const NMPL = NextMaxPoolLayer;
   const outputWidth = Math.floor(input_shape[1]);
   const outputHeight = Math.floor(input_shape[0]);
-  setInputShape([outputHeight, outputWidth, images[index].length]);
+  const nextInputShape: [number, number, number] = [
+    outputHeight,
+    outputWidth,
+    input_shape[2],
+  ];
   return (
     <div
       ref={containerRef_}
@@ -199,7 +201,6 @@ const DropOutLayer = ({
       <div className=" mt-16">
         {nextLayer && NCL && (
           <NCL
-            setInputShape={setInputShape}
             input_shape={input_shape}
             setModelpopUpHandler={setModelpopUpHandler}
             animation={animation}
@@ -212,7 +213,6 @@ const DropOutLayer = ({
         )}
         {nextLayer && NMPL && (
           <NMPL
-            setInputShape={setInputShape}
             input_shape={input_shape}
             setModelpopUpHandler={setModelpopUpHandler}
             animation={animation}
