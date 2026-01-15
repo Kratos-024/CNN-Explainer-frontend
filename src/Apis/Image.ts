@@ -1,4 +1,4 @@
-const api_uri = " https://5e56cf91e748.ngrok-free.app";
+const api_uri = "http://13.61.12.224:8000";
 
 interface ImageResponse {
   message: string;
