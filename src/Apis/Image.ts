@@ -1,4 +1,4 @@
-const api_uri = "http://127.0.0.1:8000";
+const api_uri = "https://cnn-explainer-backend.onrender.com";
 
 interface ImageResponse {
   message: string;
