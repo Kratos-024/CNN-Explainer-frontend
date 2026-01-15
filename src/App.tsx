@@ -29,7 +29,9 @@ const App = () => {
 
       const formData = new FormData();
       formData.append("Img", image);
-      setLoadingMessage("Analyzing RGB Channels & Classifying...");
+      setLoadingMessage(
+        "Analyzing RGB Channels & Classifying (first loads take time)"
+      );
       const res = await classifyNdRGB(formData);
       if (res) {
         const { softMax_prob, ImageR, ImageG, ImageB } = res;
