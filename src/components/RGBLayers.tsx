@@ -6,7 +6,7 @@ import { ResultantLayerComp } from "./ResultantLayerComp";
 import { DropOutLayer } from "./DropoutLayer";
 export interface LayersProps {
   setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
-
+  input_shape: [number, number, number];
   animation: boolean;
   svgRef: React.RefObject<SVGSVGElement | null>;
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
@@ -15,6 +15,7 @@ export interface LayersProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
 export interface ResultantLayersProps {
+  input_shape: [number, number, number];
   animation: boolean;
   svgRef: React.RefObject<SVGSVGElement | null>;
   parentBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;
@@ -23,6 +24,7 @@ export interface ResultantLayersProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
 }
 const FirstConvLayer = ({
+  input_shape,
   setModelpopUpHandler,
   animation,
   svgRef,
@@ -33,6 +35,7 @@ const FirstConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
+      input_shape={input_shape}
       setModelpopUpHandler={(
         mode?: string,
         first?: string[],
@@ -57,6 +60,7 @@ const FirstConvLayer = ({
 };
 
 const FirstReluLayer = ({
+  input_shape,
   setModelpopUpHandler,
   animation,
   svgRef,
@@ -67,6 +71,7 @@ const FirstReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
+      input_shape={input_shape}
       setModelpopUpHandler={(
         mode?: string,
         first?: string[],
@@ -89,7 +94,9 @@ const FirstReluLayer = ({
     />
   );
 };
+
 const FirstDropoutLayer = ({
+  input_shape,
   setModelpopUpHandler,
   animation,
   svgRef,
@@ -100,6 +107,7 @@ const FirstDropoutLayer = ({
 }: LayersProps) => {
   return (
     <DropOutLayer
+      input_shape={input_shape}
       setModelpopUpHandler={(
         mode?: string,
         first?: string[],
@@ -123,6 +131,7 @@ const FirstDropoutLayer = ({
   );
 };
 const SecondConvLayer = ({
+  input_shape,
   setModelpopUpHandler,
   animation,
   svgRef,
@@ -133,6 +142,7 @@ const SecondConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
+      input_shape={input_shape}
       setModelpopUpHandler={(
         mode?: string,
         first?: string[],
@@ -157,6 +167,7 @@ const SecondConvLayer = ({
 };
 
 const SecondReluLayer = ({
+  input_shape,
   setModelpopUpHandler,
   animation,
   svgRef,
@@ -167,6 +178,7 @@ const SecondReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
+      input_shape={input_shape}
       setModelpopUpHandler={(
         mode?: string,
         first?: string[],
@@ -191,6 +203,7 @@ const SecondReluLayer = ({
 };
 
 const FirstMaxPoolLayer = ({
+  input_shape,
   setModelpopUpHandler,
   animation,
   svgRef,
@@ -201,6 +214,7 @@ const FirstMaxPoolLayer = ({
 }: LayersProps) => {
   return (
     <MaxPoolLayer
+      input_shape={input_shape}
       setModelpopUpHandler={(
         mode?: string,
         first?: string[],
@@ -225,6 +239,7 @@ const FirstMaxPoolLayer = ({
 };
 
 const ThirdConvLayer = ({
+  input_shape,
   setModelpopUpHandler,
   animation,
   svgRef,
@@ -235,6 +250,7 @@ const ThirdConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
+      input_shape={input_shape}
       setModelpopUpHandler={(
         mode?: string,
         first?: string[],
@@ -257,7 +273,9 @@ const ThirdConvLayer = ({
     />
   );
 };
+
 const ThirdReluLayer = ({
+  input_shape,
   setModelpopUpHandler,
   animation,
   svgRef,
@@ -268,6 +286,7 @@ const ThirdReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
+      input_shape={input_shape}
       setModelpopUpHandler={(
         mode?: string,
         first?: string[],
@@ -292,6 +311,7 @@ const ThirdReluLayer = ({
 };
 
 const FourthConvLayer = ({
+  input_shape,
   setModelpopUpHandler,
   animation,
   svgRef,
@@ -302,6 +322,7 @@ const FourthConvLayer = ({
 }: LayersProps) => {
   return (
     <ConvLayerComp
+      input_shape={input_shape}
       setModelpopUpHandler={(
         mode?: string,
         first?: string[],
@@ -325,6 +346,7 @@ const FourthConvLayer = ({
   );
 };
 const FourthReluLayer = ({
+  input_shape,
   setModelpopUpHandler,
   animation,
   svgRef,
@@ -335,6 +357,7 @@ const FourthReluLayer = ({
 }: LayersProps) => {
   return (
     <ReluLayerComp
+      input_shape={input_shape}
       setModelpopUpHandler={(
         mode?: string,
         first?: string[],
@@ -358,6 +381,7 @@ const FourthReluLayer = ({
   );
 };
 const SecondMaxPoolLayer = ({
+  input_shape,
   setModelpopUpHandler,
   animation,
   svgRef,
@@ -368,6 +392,7 @@ const SecondMaxPoolLayer = ({
 }: LayersProps) => {
   return (
     <MaxPoolLayer
+      input_shape={input_shape}
       setModelpopUpHandler={(
         mode?: string,
         first?: string[],
@@ -390,7 +415,9 @@ const SecondMaxPoolLayer = ({
     />
   );
 };
+
 const ResultLayer = ({
+  input_shape,
   animation,
   svgRef,
   parentBoxRefs,
@@ -400,6 +427,7 @@ const ResultLayer = ({
 }: ResultantLayersProps) => {
   return (
     <ResultantLayerComp
+      input_shape={input_shape}
       animation={animation}
       childBoxRefs={childBoxRefs}
       parentBoxRefs={parentBoxRefs}
@@ -412,6 +440,7 @@ const ResultLayer = ({
   );
 };
 interface RGBLayersProps {
+  setInputShape: React.Dispatch<React.SetStateAction<[number, number, number]>>;
   setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
   animation: boolean;
   featImages: string[][];
@@ -437,7 +466,9 @@ const RGBLayers = ({
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const childBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
-
+  const width = 224;
+  const height = 224;
+  const channels_num = 3;
   return (
     <div ref={containerRef} className="relative w-full">
       <svg
@@ -445,7 +476,7 @@ const RGBLayers = ({
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
         style={{ zIndex: 1 }}
       />
-
+      <div className=" text-center">Input image shape (224,224,3)</div>
       <div className="flex gap-8 md:gap-12 justify-center items-center relative z-10 flex-wrap">
         {channels.map((channel, i) => (
           <div
@@ -479,6 +510,7 @@ const RGBLayers = ({
 
       <div>
         <FirstConvLayer
+          input_shape={[height, width, channels_num]}
           setModelpopUpHandler={(
             mode?: string,
             first?: string[],

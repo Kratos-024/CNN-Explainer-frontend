@@ -8,6 +8,7 @@ interface Point {
 }
 
 interface VisualizationContainerProps {
+  setInputShape: React.Dispatch<React.SetStateAction<[number, number, number]>>;
   setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
   animation: boolean;
   featImages: string[][];
@@ -15,6 +16,7 @@ interface VisualizationContainerProps {
 }
 
 const VisualizationContainer = ({
+  setInputShape,
   setModelpopUpHandler,
   animation,
   featImages,
@@ -118,6 +120,7 @@ const VisualizationContainer = ({
       </div>
 
       <RGBLayers
+        setInputShape={setInputShape}
         setModelpopUpHandler={(
           mode?: string,
           first?: string[],

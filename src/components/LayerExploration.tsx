@@ -4,7 +4,13 @@ import { applyDropout } from "../Apis/Image";
 import DropoutFeatureFlowView from "./DropoutFeatureFlowView";
 
 interface LayerExplorationModalProp {
-  setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
+  inputShape: [number, number, number];
+  setModelpopUpHandler: (
+    mode?: string,
+    src?: string[],
+    dest?: string,
+    input_shape?: [number, number, number]
+  ) => void;
   mode: string;
   modelPopUp: boolean;
   outputFeatureMap: string;
@@ -12,6 +18,7 @@ interface LayerExplorationModalProp {
 }
 
 export const LayerExplorationModal = ({
+  inputShape,
   mode,
   setModelpopUpHandler,
   modelPopUp,
@@ -49,6 +56,7 @@ export const LayerExplorationModal = ({
           <div className="w-full h-full overflow-auto flex items-center justify-center">
             {mode == "dropout" ? (
               <DropoutFeatureFlowView
+                inputShape={inputShape}
                 dropoutImages={dropoutImages}
                 setModelpopUpHandler={setModelpopUpHandler}
                 inputFeatureMaps={inputFeatureMaps}
@@ -56,6 +64,7 @@ export const LayerExplorationModal = ({
             ) : (
               <FeatureFlowView
                 mode={mode}
+                inputShape={inputShape}
                 setModelpopUpHandler={setModelpopUpHandler}
                 outputFeatureMap={outputFeatureMap}
                 inputFeatureMaps={inputFeatureMaps}

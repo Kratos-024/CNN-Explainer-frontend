@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { drawConnections } from "./ConvLayer";
 
 const ResultantLayerComp = ({
+  input_shape,
   animation,
   circle_class_name,
   results,
@@ -11,6 +12,7 @@ const ResultantLayerComp = ({
   containerRef,
   path_class_name,
 }: {
+  input_shape: [number, number, number];
   animation: boolean;
   circle_class_name: string;
   childBoxRefs: React.RefObject<(HTMLDivElement | null)[]>;

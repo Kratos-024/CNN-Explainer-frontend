@@ -4,6 +4,7 @@ import { ImCancelCircle } from "react-icons/im";
 import type { Point } from "./layers";
 
 interface DropoutFeatureFlowViewProp {
+  inputShape: [number, number, number];
   dropoutImages: string[];
   setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
   inputFeatureMaps: string[];
@@ -130,9 +131,9 @@ const DropoutFeatureFlowView = ({
       />
       <div
         onClick={() => setModelpopUpHandler()}
-        className="cursor-pointer z-30 absolute right-5 top-5"
+        className="cursor-pointer z-50 absolute right-5 -top-24"
       >
-        <ImCancelCircle className="fill-gray-600 w-8 h-8 hover:fill-red-500 transition-colors" />
+        <ImCancelCircle className="fill-gray-600 w-8 h-8 hover:fill-white/40 transition-colors" />
       </div>
 
       <div

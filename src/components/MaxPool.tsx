@@ -1,7 +1,9 @@
 import { useEffect, useRef } from "react";
-import { drawReluConnections, type ReluCompProp } from "./ReluLayer";
+import { drawReluConnections } from "./Connection";
+import type { LayerCompProp } from "./ReluLayer";
 
 const MaxPoolLayer = ({
+  input_shape,
   setModelpopUpHandler,
   index,
   label,
@@ -16,7 +18,7 @@ const MaxPoolLayer = ({
   nextLayer,
   ThirdConvLayer,
   ResultantLayer,
-}: ReluCompProp) => {
+}: LayerCompProp) => {
   useEffect(() => {
     const drawConnect = () => {
       return drawReluConnections(
@@ -52,17 +54,27 @@ const MaxPoolLayer = ({
   const localBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const NCL = ThirdConvLayer;
   const ResultL = ResultantLayer;
+  const outputWidth = Math.floor((input_shape[1] - 2 + 2 * 0) / 2 + 1);
+  const outputHeight = Math.floor((input_shape[0] - 2 + 2 * 0) / 2 + 1);
+  const nextInputShape: [number, number, number] = [
+    outputHeight,
+    outputWidth,
+    input_shape[2],
+  ];
   return (
     <div
       ref={containerRef_}
       className="relative flex flex-col  gap-6 justify-center
-      items-center mt-24"
+      items-center "
     >
       <svg
         ref={svgRef_}
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
         style={{ zIndex: 0 }}
-      />
+      />{" "}
+      <div className=" text-center">
+        Input image shape1 ({outputHeight},{outputWidth},3)
+      </div>
       <div className="flex gap-6 justify-center items-center z-10 flex-wrap">
         {images[index].map((image, i) => (
           <div
@@ -93,6 +105,7 @@ const MaxPoolLayer = ({
       <div className=" mt-16">
         {nextLayer && NCL && (
           <NCL
+            input_shape={nextInputShape}
             setModelpopUpHandler={setModelpopUpHandler}
             animation={animation}
             images={images}
@@ -106,6 +119,7 @@ const MaxPoolLayer = ({
       <div className=" mt-16">
         {nextLayer && ResultL && (
           <ResultL
+            input_shape={nextInputShape}
             animation={animation}
             results={images}
             childBoxRefs={nextLayerBoxRefs}

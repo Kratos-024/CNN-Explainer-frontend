@@ -12,6 +12,7 @@ interface CellDataProp {
 }
 
 interface inputProp {
+  inputShape: [number, number, number];
   mode: string;
   imgSrc: string;
   resultImgSrc: string;
@@ -41,6 +42,7 @@ const getPixelValue = (
 };
 
 export const ConvolutionVisualizer = ({
+  inputShape,
   mode,
   imgSrc,
   resultImgSrc,
@@ -48,6 +50,20 @@ export const ConvolutionVisualizer = ({
   kernel,
   onClose,
 }: inputProp) => {
+  const [outputShape, setOutputShape] = useState<[number, number, number]>([
+    0, 0, 0,
+  ]);
+  const poolSize = 2;
+  const stride = 2;
+  if (mode === "maxpool") {
+    const [h, w, c] = inputShape;
+
+    const hOut = Math.floor((h - poolSize) / stride) + 1;
+    const wOut = Math.floor((w - poolSize) / stride) + 1;
+
+    setOutputShape([hOut, wOut, c]);
+  }
+
   const [hoverPos, setHoverPos] = useState<{ x: number; y: number }>({
     x: 1,
     y: 1,
@@ -344,8 +360,8 @@ export const ConvolutionVisualizer = ({
         </div>
         <div className="flex flex-col items-center shrink-0">
           <h3 className="text-xl text-gray-600 mb-2">
-            Output ({imgData.width ? imgData.width - 2 : 28},{" "}
-            {imgData.height ? imgData.height - 2 : 28})
+            Output ({outputShape[0] ? outputShape[0] : 28},{" "}
+            {outputShape[1] ? outputShape[1] : 28})
           </h3>
 
           <div

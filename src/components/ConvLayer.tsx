@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import { useEffect, useRef } from "react";
 import type { Point } from "./layers";
-import type { ReluCompProp } from "./ReluLayer";
+import type { LayerCompProp } from "./ReluLayer";
 
 export const drawConnections = (
   index: number,
@@ -102,6 +102,7 @@ export const drawConnections = (
 };
 
 const ConvLayerComp = ({
+  input_shape,
   setModelpopUpHandler,
   label,
   index,
@@ -115,7 +116,7 @@ const ConvLayerComp = ({
   circle_class_name,
   relu,
   ReluLayer,
-}: ReluCompProp) => {
+}: LayerCompProp) => {
   const drawConnect = () => {
     return drawConnections(
       index,
@@ -150,6 +151,16 @@ const ConvLayerComp = ({
   const convLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const reluLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const RL = ReluLayer;
+  if (!input_shape || input_shape.length < 3) {
+    return null;
+  }
+  const outputWidth = Math.floor((input_shape[1] - 3 + 2 * 2) / 1 + 1);
+  const outputHeight = Math.floor((input_shape[0] - 3 + 2 * 2) / 1 + 1);
+  const nextInputShape: [number, number, number] = [
+    outputHeight,
+    outputWidth,
+    input_shape[2] + 10,
+  ];
   return (
     <div
       ref={containerRef_}
@@ -160,13 +171,21 @@ const ConvLayerComp = ({
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
         style={{ zIndex: 0 }}
       />
+      <div className=" text-center">
+        Input image shape1 ({outputHeight},{outputWidth},3)
+      </div>
       <div className="flex gap-6 justify-center items-center z-10">
         {images[index].map((image, i) => (
           <div
             onClick={() => {
               index === 2
-                ? setModelpopUpHandler("conv", images[0], image)
-                : setModelpopUpHandler("conv", images[index - 1], image);
+                ? setModelpopUpHandler("conv", images[0], image, input_shape)
+                : setModelpopUpHandler(
+                    "conv",
+                    images[index - 1],
+                    image,
+                    input_shape
+                  );
             }}
             key={i}
             ref={(el) => {
@@ -189,6 +208,7 @@ const ConvLayerComp = ({
       <div>
         {relu && RL && (
           <RL
+            input_shape={nextInputShape}
             setModelpopUpHandler={setModelpopUpHandler}
             animation={animation}
             svgRef={svgRef_}

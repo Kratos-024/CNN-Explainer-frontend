@@ -70,17 +70,21 @@ const App = () => {
   const [nextLayerImg, setNextLayerImg] = useState<string>("");
   const [Mode, setMode] = useState<string>("");
   const [floatingModel, setFloatingModel] = useState<boolean>(true);
-
+  const [inputShape, setInputShape] = useState<[number, number, number]>([
+    0, 0, 0,
+  ]);
   const setModelpopUpHandler = (
     mode?: string,
     firstLayerImgs?: string[],
-    nextLayerImage?: string
+    nextLayerImage?: string,
+    input_shape?: [number, number, number]
   ) => {
     setModelpopUp(!modelpopUp);
     if (mode && nextLayerImage && firstLayerImgs) {
       setMode(mode);
       setFirstLayerImgs(firstLayerImgs);
       setNextLayerImg(nextLayerImage);
+      setInputShape(input_shape || [0, 0, 0]);
     }
   };
   return (
@@ -137,6 +141,7 @@ const App = () => {
 
         {imagePreview && !loading && (
           <VisualizationContainer
+            setInputShape={setInputShape}
             setModelpopUpHandler={(
               mode?: string,
               first?: string[],
@@ -155,10 +160,12 @@ const App = () => {
           setModelpopUpHandler={(
             mode?: string,
             first?: string[],
-            next?: string
+            next?: string,
+            inputShape?: [number, number, number]
           ) => {
-            setModelpopUpHandler(mode, first, next);
+            setModelpopUpHandler(mode, first, next, inputShape);
           }}
+          inputShape={inputShape}
           outputFeatureMap={nextLayerImg}
           inputFeatureMaps={firstLayerImgs}
           modelPopUp={modelpopUp}

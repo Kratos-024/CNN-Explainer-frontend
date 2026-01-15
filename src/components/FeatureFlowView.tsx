@@ -4,12 +4,14 @@ import { ImCancelCircle } from "react-icons/im";
 import { ConvolutionVisualizer } from "./ConvolutionVisualizer";
 import type { Point } from "./layers";
 interface ConvolutionFiltersProp {
+  inputShape: [number, number, number];
   mode: string;
   setModelpopUpHandler: (mode?: string, src?: string[], dest?: string) => void;
   outputFeatureMap: string;
   inputFeatureMaps: string[];
 }
 const FeatureFlowView = ({
+  inputShape,
   mode,
   setModelpopUpHandler,
   inputFeatureMaps,
@@ -209,6 +211,7 @@ const FeatureFlowView = ({
       {showMathDetail && (
         <div className="absolute z-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 shadow-2xl">
           <ConvolutionVisualizer
+            inputShape={inputShape}
             onClose={showMathDetailHandler}
             mode={mode}
             imgSrc={channel}

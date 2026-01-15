@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { type ReluCompProp } from "./ReluLayer";
+import { type LayerCompProp } from "./ReluLayer";
 import * as d3 from "d3";
 import type { Point } from "./layers";
 export const drawDropoutConnections = (
@@ -101,8 +101,10 @@ export const drawDropoutConnections = (
 };
 
 const DropOutLayer = ({
-  setModelpopUpHandler,
+  setInputShape,
 
+  setModelpopUpHandler,
+  input_shape,
   index,
   images,
   childBoxRefs,
@@ -115,7 +117,7 @@ const DropOutLayer = ({
   NextConvLayer,
   NextMaxPoolLayer,
   animation,
-}: ReluCompProp) => {
+}: LayerCompProp) => {
   useEffect(() => {
     const drawConnect = () => {
       return drawDropoutConnections(
@@ -151,6 +153,9 @@ const DropOutLayer = ({
   const localBoxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const NCL = NextConvLayer;
   const NMPL = NextMaxPoolLayer;
+  const outputWidth = Math.floor(input_shape[1]);
+  const outputHeight = Math.floor(input_shape[0]);
+  setInputShape([outputHeight, outputWidth, images[index].length]);
   return (
     <div
       ref={containerRef_}
@@ -162,6 +167,9 @@ const DropOutLayer = ({
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
         style={{ zIndex: 0 }}
       />
+      <div className=" text-center">
+        Input image shape1 ({outputHeight},{outputWidth},3)
+      </div>
       <div className="flex gap-6 justify-center items-center z-10 flex-wrap">
         <div
           onClick={() => {
@@ -191,6 +199,8 @@ const DropOutLayer = ({
       <div className=" mt-16">
         {nextLayer && NCL && (
           <NCL
+            setInputShape={setInputShape}
+            input_shape={input_shape}
             setModelpopUpHandler={setModelpopUpHandler}
             animation={animation}
             images={images}
@@ -202,6 +212,8 @@ const DropOutLayer = ({
         )}
         {nextLayer && NMPL && (
           <NMPL
+            setInputShape={setInputShape}
+            input_shape={input_shape}
             setModelpopUpHandler={setModelpopUpHandler}
             animation={animation}
             images={images}
