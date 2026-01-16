@@ -46,7 +46,7 @@ const FirstConvLayer = ({
     <ConvLayerComp
       input_shape={input_shape}
       setModelpopUpHandler={setModelpopUpHandler}
-      label={"Feature Map"}
+      label={"Conv"}
       index={3}
       animation={animation}
       images={images}
@@ -136,7 +136,7 @@ const SecondConvLayer = ({
     <ConvLayerComp
       input_shape={input_shape}
       setModelpopUpHandler={setModelpopUpHandler}
-      label={"Feature Map"}
+      label={"Conv"}
       index={6}
       animation={animation}
       path_class_name="secondConv-layer-path"
@@ -226,7 +226,7 @@ const ThirdConvLayer = ({
     <ConvLayerComp
       input_shape={input_shape}
       setModelpopUpHandler={setModelpopUpHandler}
-      label={"Feature Map"}
+      label={"Conv"}
       index={9}
       animation={animation}
       path_class_name="thirdConv-layer-path"
@@ -314,7 +314,7 @@ const FourthConvLayer = ({
     <ConvLayerComp
       input_shape={input_shape}
       setModelpopUpHandler={setModelpopUpHandler}
-      label={"Feature Map"}
+      label={"Conv"}
       index={11}
       animation={animation}
       path_class_name="thirdConv-layer-path"

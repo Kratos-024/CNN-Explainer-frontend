@@ -36,13 +36,16 @@ const App = () => {
       if (res) {
         const { softMax_prob, ImageR, ImageG, ImageB } = res;
         allLayersData.push([
-          `data:image/png;base64,${ImageR}`,
-          `data:image/png;base64,${ImageG}`,
-          `data:image/png;base64,${ImageB}`,
+          `data:image/jpeg;base64,${ImageR}`,
+          `data:image/jpeg;base64,${ImageG}`,
+          `data:image/jpeg;base64,${ImageB}`,
         ]);
         allLayersData.push(softMax_prob);
       }
       setLoadingMessage("Getting Convolutional Layers");
+      const indices = [0, 2, 5, 7, 8, 10, 12, 13, 15, 17, 18];
+      formData.append("layers", indices.join(","));
+
       const res2 = await getimgData(formData);
       if (res2?.success) {
         setLoadingMessage("Visualizing Feature Maps");
@@ -51,7 +54,7 @@ const App = () => {
           const layerKey = `layer_${index}`;
           if (res2.data[layerKey]) {
             const featImages = res2.data[layerKey].map(
-              (img) => `data:image/png;base64,${img}`
+              (img) => `data:image/jpeg;base64,${img}`
             );
             allLayersData.push(featImages);
           }
@@ -65,6 +68,7 @@ const App = () => {
 
     sendImage();
   }, [image]);
+
   const [modelpopUp, setModelpopUp] = useState<boolean>(false);
   const [firstLayerImgs, setFirstLayerImgs] = useState<string[]>([]);
   const [nextLayerImg, setNextLayerImg] = useState<string>("");
@@ -95,9 +99,7 @@ const App = () => {
   return (
     <div className="w-full relative min-h-screen bg-linear-to-br from-gray-50 to-gray-100">
       <nav className="bg-white shadow-md py-4 px-6">
-        <h1 className="text-xl font-bold text-gray-800">
-          CNN & LLM Visualizer
-        </h1>
+        <h1 className="text-xl font-bold text-gray-800">CNN Visualizer</h1>
       </nav>
 
       <div
@@ -111,7 +113,26 @@ const App = () => {
         >
           Upload Image to Visualize CNN Flow
         </h2>
-
+        <ul className=" flex gap-4 mb-6 text-gray-600">
+          <li>
+            <span className="">Glacier</span>
+          </li>
+          <li>
+            <span className=""> Sea</span>
+          </li>
+          <li>
+            <span className=""> Street</span>
+          </li>
+          <li>
+            <span className=""> Forest </span>
+          </li>{" "}
+          <li>
+            <span className="">Buildings</span>
+          </li>{" "}
+          <li>
+            <span className="">Mountain</span>
+          </li>
+        </ul>{" "}
         <div className="mb-8 flex gap-7">
           <label className="px-6 py-3 border-2 border-gray-300 rounded-lg cursor-pointer hover:border-blue-500 transition bg-white shadow-sm inline-block">
             <span className="text-gray-700">
@@ -137,13 +158,11 @@ const App = () => {
             </span>
           </label>
         </div>
-
         {loading && (
           <div className="text-blue-600 font-medium mb-4">
             Processing image...
           </div>
         )}
-
         {imagePreview && !loading && (
           <VisualizationContainer
             setInputShape={setInputShape}
@@ -161,7 +180,6 @@ const App = () => {
             imagePreview={imagePreview}
           />
         )}
-
         <LayerExplorationModal
           mode={Mode}
           setModelpopUpHandler={(

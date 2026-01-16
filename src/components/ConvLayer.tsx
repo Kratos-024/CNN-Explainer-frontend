@@ -213,7 +213,7 @@ const ConvLayerComp = ({
               alt={label}
             />
             <div className="text-center mt-1 text-xs text-gray-500">
-              {label}
+              {label} {i + 1}
             </div>
           </div>
         ))}

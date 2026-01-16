@@ -65,18 +65,16 @@ export const LayerExplorationModal = ({
                 inputFeatureMaps={inputFeatureMaps}
               />
             )}
-            {mode == "conv" ||
-              mode == "maxpool" ||
-              (mode == "relu" && (
-                <FeatureFlowView
-                  outputShape={outputShape}
-                  inputShape={inputShape}
-                  mode={mode}
-                  setModelpopUpHandler={setModelpopUpHandler}
-                  outputFeatureMap={outputFeatureMap}
-                  inputFeatureMaps={inputFeatureMaps}
-                />
-              ))}
+            {mode != "dropout" && (
+              <FeatureFlowView
+                outputShape={outputShape}
+                inputShape={inputShape}
+                mode={mode}
+                setModelpopUpHandler={setModelpopUpHandler}
+                outputFeatureMap={outputFeatureMap}
+                inputFeatureMaps={inputFeatureMaps}
+              />
+            )}
           </div>
         </div>
       )}

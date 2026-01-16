@@ -23,7 +23,7 @@ const ResultantLayerComp = ({
   path_class_name: string;
 }) => {
   const classes = [
-    ["glacier", "sea", "street", "forest", "buildings", "mountain"],
+    ["buildings", "forest", "glacier", "mountain", "sea", "street"],
   ];
   //@ts-ignore
   let resultProb = results[1].replace(/'/g, "");
