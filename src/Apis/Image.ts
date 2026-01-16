@@ -1,5 +1,4 @@
 const api_uri = "https://therianthropic-billie-dubitative.ngrok-free.dev";
-//const api_uri = "http://127.0.0.1:8000";
 
 interface ImageResponse {
   message: string;
@@ -8,6 +7,7 @@ interface ImageResponse {
   ImageG: string;
   ImageB: string;
 }
+
 interface FeatDataResponse {
   success: boolean;
   data: {
@@ -15,24 +15,35 @@ interface FeatDataResponse {
   };
   first_relu_images: string[];
 }
+
 interface dropoutProp {
   success: boolean;
   images: string[];
 }
+const getHeaders = (isJson = false) => {
+  const headers: HeadersInit = {
+    "ngrok-skip-browser-warning": "69420",
+  };
+  if (isJson) {
+    headers["Content-Type"] = "application/json";
+  }
+  return headers;
+};
+
 const classifyNdRGB = async (
   formData: FormData
 ): Promise<ImageResponse | undefined> => {
   try {
     const response = await fetch(`${api_uri}/classify`, {
       method: "POST",
+      headers: getHeaders(false),
       body: formData,
     });
-
-    const data = await response.json();
-
-    return data;
+    if (!response.ok) throw new Error("Network response was not ok");
+    return await response.json();
   } catch (error) {
-    console.log(error);
+    console.error("Classify Error:", error);
+    return undefined;
   }
 };
 
@@ -42,31 +53,33 @@ const getimgData = async (
   try {
     const response = await fetch(`${api_uri}/getImageData`, {
       method: "POST",
+      headers: getHeaders(false),
       body: formData,
     });
-
-    const data = await response.json();
-
-    return data;
+    if (!response.ok) throw new Error("Network response was not ok");
+    return await response.json();
   } catch (error) {
-    console.log(error);
+    console.error("GetImageData Error:", error);
+    return undefined;
   }
 };
+
 const applyDropout = async (
   imgs: string[]
 ): Promise<dropoutProp | undefined> => {
   try {
     const response = await fetch(`${api_uri}/applyDropout`, {
       method: "POST",
+      headers: getHeaders(true),
       body: JSON.stringify({ Img: imgs }),
     });
-
-    const data = await response.json();
-
-    return data;
+    if (!response.ok) throw new Error("Network response was not ok");
+    return await response.json();
   } catch (error) {
-    console.log(error);
+    console.error("Dropout Error:", error);
+    return undefined;
   }
 };
+
 export { classifyNdRGB, getimgData, applyDropout };
 export type { ImageResponse };
