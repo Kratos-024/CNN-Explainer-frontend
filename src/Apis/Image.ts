@@ -1,4 +1,4 @@
-const api_uri = "http://16.170.253.191:8000";
+const api_uri = "https://16.170.253.191:8000";
 //const api_uri = "http://127.0.0.1:8000";
 
 interface ImageResponse {
