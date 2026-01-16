@@ -93,14 +93,14 @@ git clone https://github.com/Kratos-024/CNN-Explainer-frontend.git
 cd CNN-Explainer-frontend
 
 # Install dependencies
-npm install
+bun install
 ```
 
 ### Usage
 
 ```bash
 # Start development server
-npm start
+bub run  dev
 ```
 
 ### Testing
@@ -112,14 +112,6 @@ npm test
 
 ---
 
-## Project Roadmap
-
-* [x] Task 1: Implement initial CNN visualization.
-* [ ] Task 2: Add interactivity for layer exploration.
-* [ ] Task 3: Integrate backend API for dynamic images.
-
----
-
 ## Contributing
 
 * Fork the repository and clone locally.
@@ -127,16 +119,3 @@ npm test
 * Make changes and commit.
 * Push to your fork and create a Pull Request.
 * Review will be done and merged.
-
----
-
-## License
-
-This project is licensed under [MIT License](https://choosealicense.com/licenses/mit/).
-
----
-
-## Acknowledgments
-
-* Inspired by CNN visualization tutorials.
-* Thanks to React, TypeScript, and Vite communities.
