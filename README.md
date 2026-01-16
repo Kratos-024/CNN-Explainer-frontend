@@ -1,13 +1,7 @@
 # CNN-EXPLAINER-FRONTEND
 
-![Folder](https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/ec559a9f6bfd399b82bb44393651661b08aaf7ba/icons/folder-markdown-open.svg)
 
 **A frontend project to visually explain CNN architectures.**
-
-![License](https://img.shields.io/github/license/Kratos-024/CNN-Explainer-frontend?style=for-the-badge&logo=opensourceinitiative&logoColor=white&color=0080ff)
-![Last Commit](https://img.shields.io/github/last-commit/Kratos-024/CNN-Explainer-frontend?style=for-the-badge&logo=git&logoColor=white&color=0080ff)
-![Top Language](https://img.shields.io/github/languages/top/Kratos-024/CNN-Explainer-frontend?style=for-the-badge&color=0080ff)
-![Language Count](https://img.shields.io/github/languages/count/Kratos-024/CNN-Explainer-frontend?style=for-the-badge&color=0080ff)
 
 ---
 
@@ -40,3 +34,109 @@ CNN-EXPLAINER-FRONTEND is a React + TypeScript project that visually demonstrate
 ---
 
 ## Project Structure
+
+```
+CNN-Explainer-frontend/
+├── README.md
+├── package.json
+├── tsconfig.json
+├── tsconfig.app.json
+├── tsconfig.node.json
+├── vite.config.ts
+├── index.html
+├── eslint.config.js
+├── public/
+│   ├── glacier.jpg
+│   └── vite.svg
+├── src/
+│   ├── Apis/
+│   │   └── Image.ts
+│   ├── components/
+│   │   ├── ConvLayer.tsx
+│   │   ├── DropoutLayer.tsx
+│   │   ├── FeatureFlowView.tsx
+│   │   ├── LayerExploration.tsx
+│   │   ├── LoadingComp.tsx
+│   │   ├── NavBar.tsx
+│   │   ├── RGBLayers.tsx
+│   │   ├── ResultantLayerComp.tsx
+│   │   ├── ReluLayer.tsx
+│   │   ├── Connector.tsx
+│   │   ├── ConvolutionVisualizer.tsx
+│   │   ├── FloatingModel.tsx
+│   │   ├── DropoutFeatureFlowView.tsx
+│   │   ├── MaxPool.tsx
+│   │   └── Connection.tsx
+│   ├── App.tsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.tsx
+└── bun.lock
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+* Node.js and npm installed.
+* TypeScript knowledge recommended.
+
+### Installation
+
+```bash
+# Clone the repo
+git clone https://github.com/Kratos-024/CNN-Explainer-frontend.git
+
+# Navigate to project folder
+cd CNN-Explainer-frontend
+
+# Install dependencies
+npm install
+```
+
+### Usage
+
+```bash
+# Start development server
+npm start
+```
+
+### Testing
+
+```bash
+# Run tests
+npm test
+```
+
+---
+
+## Project Roadmap
+
+* [x] Task 1: Implement initial CNN visualization.
+* [ ] Task 2: Add interactivity for layer exploration.
+* [ ] Task 3: Integrate backend API for dynamic images.
+
+---
+
+## Contributing
+
+* Fork the repository and clone locally.
+* Create a new branch for your feature.
+* Make changes and commit.
+* Push to your fork and create a Pull Request.
+* Review will be done and merged.
+
+---
+
+## License
+
+This project is licensed under [MIT License](https://choosealicense.com/licenses/mit/).
+
+---
+
+## Acknowledgments
+
+* Inspired by CNN visualization tutorials.
+* Thanks to React, TypeScript, and Vite communities.
