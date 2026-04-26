@@ -40,3 +40,25 @@ const NavBar = () => {
 };
 
 export default NavBar;
+<<<<<<< HEAD
+=======
+
+//  <div className="  w-225  mx-auto ">
+//    <h1 className=" text-center">Add image</h1>
+//    <input
+//      onChange={(e) => {
+//        if (e.target.files && e.target.files[0]) {
+//          setImage(e.target.files[0]);
+//        }
+//      }}
+//      type="file"
+//      accept="image"
+//    ></input>
+//    {image && (
+//      <div>
+//        <img src={URL.createObjectURL(image)} />
+//      </div>
+//    )}{" "}
+//    {predictedclass && <h3>{predictedclass}</h3>}
+//  </div>;
+>>>>>>> c566a0ce414e14e068f1085d79d735075390eab7
