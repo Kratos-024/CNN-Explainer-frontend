@@ -1,6 +1,6 @@
 import type { DropoutResponse } from "../../public/constants/typeData";
 
-const api_uri = "https://invention-metal-found-baby.trycloudflare.com";
+const api_uri = "https://therianthropic-billie-dubitative.ngrok-free.dev";
 
 interface ImageResponse {
   message: string;
