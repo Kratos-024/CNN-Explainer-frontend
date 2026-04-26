@@ -1,6 +1,6 @@
 import type { DropoutResponse } from "../../public/constants/typeData";
 
-const api_uri = "http://13.60.45.246:8000";
+const api_uri = "https://invention-metal-found-baby.trycloudflare.com";
 
 interface ImageResponse {
   message: string;
