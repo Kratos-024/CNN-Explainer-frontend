@@ -120,7 +120,7 @@ const FloatingModal = ({
     });
   }, [index]);
   return (
-    <div className="absolute bottom-6 end-6 z-50">
+    <div className="absolute bottom-6 inset-e-6 z-50">
       <div className="relative w-full max-w-105 bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
         <div className="flex justify-between items-start mb-3">
           <h2 className="text-lg font-bold text-gray-900"> {info.title}</h2>

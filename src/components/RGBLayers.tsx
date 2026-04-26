@@ -11,7 +11,7 @@ export interface LayersProps {
     src?: string[],
     dest?: string,
     inputShape?: [number, number, number],
-    outputShape?: [number, number, number]
+    outputShape?: [number, number, number],
   ) => void;
   input_shape: [number, number, number];
   animation: boolean;
@@ -421,7 +421,7 @@ interface RGBLayersProps {
     src?: string[],
     dest?: string,
     inputShape?: [number, number, number],
-    outputShape?: [number, number, number]
+    outputShape?: [number, number, number],
   ) => void;
   animation: boolean;
   featImages: string[][];

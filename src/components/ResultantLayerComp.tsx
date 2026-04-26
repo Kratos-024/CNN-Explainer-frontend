@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { drawConnections } from "./ConvLayer";
 
 const ResultantLayerComp = ({
-  input_shape,
   animation,
   circle_class_name,
   results,
@@ -26,11 +25,10 @@ const ResultantLayerComp = ({
     ["buildings", "forest", "glacier", "mountain", "sea", "street"],
   ];
   //@ts-ignore
-<<<<<<< HEAD
   console.log(" results[1] results[1] results[1] results[1]", results);
-=======
->>>>>>> c566a0ce414e14e068f1085d79d735075390eab7
+  //@ts-ignore
   let resultProb = results[1].replace(/'/g, "");
+
   resultProb = JSON.parse(resultProb);
   resultProb = resultProb[0].map((num: number) => Number(num.toFixed(2)));
   resultProb = [resultProb];
@@ -45,11 +43,7 @@ const ResultantLayerComp = ({
       parentBoxRefs,
       childBoxRefs,
       path_class_name,
-<<<<<<< HEAD
       circle_class_name,
-=======
-      circle_class_name
->>>>>>> c566a0ce414e14e068f1085d79d735075390eab7
     );
   };
   useEffect(() => {
