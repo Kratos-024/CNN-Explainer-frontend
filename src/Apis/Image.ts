@@ -1,6 +1,6 @@
 import type { DropoutResponse } from "../../public/constants/typeData";
 
-const api_uri = "http://localhost:8000";
+const api_uri = "http://13.60.45.246:8000";
 
 interface ImageResponse {
   message: string;
