@@ -22,11 +22,21 @@ interface dropoutProp {
   success: boolean;
   images: string[];
 }
-const getHeaders = (isJson = false) => {
-  const headers: HeadersInit = {};
+
+/**
+ * Generates headers required for ngrok and content handling.
+ * Note: When using FormData, we do NOT set Content-Type manually
+ * so the browser can append the boundary string automatically.
+ */
+const getHeaders = (isJson = false): HeadersInit => {
+  const headers: Record<string, string> = {
+    "ngrok-skip-browser-warning": "true",
+  };
+
   if (isJson) {
     headers["Content-Type"] = "application/json";
   }
+
   return headers;
 };
 
@@ -36,7 +46,7 @@ const classifyNdRGB = async (
   try {
     const response = await fetch(`${api_uri}/classify`, {
       method: "POST",
-      headers: getHeaders(false),
+      headers: getHeaders(false), // No Content-Type for FormData
       body: formData,
     });
     if (!response.ok) throw new Error("Network response was not ok");
@@ -70,7 +80,7 @@ const applyDropout = async (
   try {
     const response = await fetch(`${api_uri}/applyDropout`, {
       method: "POST",
-      headers: getHeaders(true),
+      headers: getHeaders(true), // Set Content-Type: application/json
       body: JSON.stringify({ Img: imgs }),
     });
     if (!response.ok) throw new Error("Network response was not ok");
@@ -80,13 +90,13 @@ const applyDropout = async (
     return undefined;
   }
 };
+
 const getDropoutEffectData = async (
   formData: FormData,
 ): Promise<DropoutResponse | undefined> => {
   try {
     const response = await fetch(`${api_uri}/getDropoutData`, {
       method: "POST",
-
       headers: getHeaders(false),
       body: formData,
     });
